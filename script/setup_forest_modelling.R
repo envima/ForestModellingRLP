@@ -34,7 +34,7 @@ envrmt = envimaR::createEnvi(root_folder = rootDir,
                              alt_env_value = "PCRZP",
                              alt_env_root_folder = "F:/BEN/edu")
 ## set raster temp path
-raster::rasterOptions(tmpdir = envrmt$path_tmp)
+#raster::rasterOptions(tmpdir = envrmt$path_tmp)
 
 
 
