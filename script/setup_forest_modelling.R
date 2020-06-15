@@ -21,8 +21,11 @@ projectDirList   = c("data/",                                 # local data folde
                      "data/summer/",
                      "data/winter/",
                      "data/hansen",
+                     "data/indices/",
                      "data/Landesgrenze_RLP/",
                      "data/Exp_Shape_Wefl_UTM/",
+                     "ForestModellingRLP/",
+                     "ForestModellingRLP/script/",
                      "src/"
                     )
 # Automatically set root direcory, folder structure and load libraries
