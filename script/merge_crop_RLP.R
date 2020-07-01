@@ -6,7 +6,7 @@
 #                              summer: Sentinel-2B. Tiles: 2019/06/27: T31UGR, T32ULA, T32ULB, T32ULV, T32UMB
 #                                                         2019/06/24: T32UMV, T32UMA, 
 #                                                          
-#     polygon of RLP with buffer of 5km, source: https://opendata-esri-de.opendata.arcgis.com/datasets/esri-de-content::landesgrenze-rlp/data
+#polygon of RLP with buffer of 5km, source: https://opendata-esri-de.opendata.arcgis.com/datasets/esri-de-content::landesgrenze-rlp/data
 #output: Raster winter/summer RLP 
 #----------------------------------------------------------
 
@@ -34,15 +34,26 @@ folderNames <- c("L2A_T32UMA_A010287_20190224T103021", # names of the folders wi
            "L2A_T32ULV_A010330_20190227T104021",
            "L2A_T32ULA_A010330_20190227T104021",
            "L2A_T32UMB_A010330_20190227T104021") 
-layerNames <- c("B01", "B02", "B03", "B04", "B05", "B06", "B07", "B09", "B11", "B12", "B8A", "B08")
+layerNames <- c("B02", "B03", "B04", "B05", "B06", "B07", "B11", "B12", "B8A", "B08", "B01", "B09")
 
 
 #stack all bands of each image and safe as raster
   for (i in folderNames){
-   rasterStacked <- raster::stack(list.files(file.path(paste0(envrmt$path_winter, "/", i, "/IMG_DATA/R60m")), pattern = glob2rx("*.jp2"), full.names = TRUE))
+   rasterStacked <- raster::stack(list.files(file.path(paste0(envrmt$path_winter, "/", i, "/IMG_DATA/R20m")), pattern = glob2rx("*.jp2"), full.names = TRUE))
+   #Band with 10 meter resolution
    B08 <- raster::stack(list.files(file.path(paste0(envrmt$path_winter, "/", i, "/IMG_DATA/R10m")), pattern = glob2rx("*.jp2"), full.names = TRUE))
    B08 <- raster::resample(B08, rasterStacked)
-   rasterStacked <- raster::stack(rasterStacked, B08)
+   #bands with 60m resolution
+   B01_09 <- raster::stack(list.files(file.path(paste0(envrmt$path_winter, "/", i, "/IMG_DATA/R60m")), pattern = glob2rx("*.jp2"), full.names = TRUE))
+   B01_09 <- raster::resample(B01_09, rasterStacked)
+  
+   #Stack all layers
+   rasterStacked <- raster::stack(rasterStacked, B08, B01_09)
+   #rename layers
+   for(n in 1:nlayers(rasterStacked)) {
+     names(rasterStacked)[n] <- layerNames[n]
+   }
+   
    #safe as raster
    r <- writeRaster(rasterStacked, file.path(paste0(envrmt$path_winter, "/", i, ".grd")), format="raster", overwrite = TRUE)
    hdr(r, format = "ENVI")
@@ -66,7 +77,7 @@ for(i in listOfFiles){
   bricked <- raster::brick(i)
   aerialBricks <- c(aerialBricks, bricked)
 }
-aerialBricks$fun = min
+aerialBricks$fun = max
 winterRLP <-  do.call(raster::mosaic, aerialBricks)
 #rename raster layers
 for(n in 1:nlayers(winterRLP)) {
@@ -80,16 +91,27 @@ folderNames <- c("L2A_T32UMV_A012003_20190624T103030",
                  "L2A_T31UGR_A012046_20190627T104030",
                  "L2A_T32ULA_A012046_20190627T104030",
                  "L2A_T32ULB_A012046_20190627T104030",
-                 #"L2A_T32ULV_A012046_20190627T104030",
+                 "L2A_T32ULV_A012046_20190627T104030",
                  "L2A_T32UMB_A012046_20190627T104030")
 
 
 #stack all bands of each image and safe as raster
 for (i in folderNames){
-  rasterStacked <- raster::stack(list.files(file.path(paste0(envrmt$path_summer, "/", i, "/IMG_DATA/R60m")), pattern = glob2rx("*.jp2"), full.names = TRUE))
+  rasterStacked <- raster::stack(list.files(file.path(paste0(envrmt$path_summer, "/", i, "/IMG_DATA/R20m")), pattern = glob2rx("*.jp2"), full.names = TRUE))
+  #Band with 10 meter resolution
   B08 <- raster::stack(list.files(file.path(paste0(envrmt$path_summer, "/", i, "/IMG_DATA/R10m")), pattern = glob2rx("*.jp2"), full.names = TRUE))
   B08 <- raster::resample(B08, rasterStacked)
-  rasterStacked <- raster::stack(rasterStacked, B08)
+  #bands with 60m resolution
+  B01_09 <- raster::stack(list.files(file.path(paste0(envrmt$path_summer, "/", i, "/IMG_DATA/R60m")), pattern = glob2rx("*.jp2"), full.names = TRUE))
+  B01_09 <- raster::resample(B01_09, rasterStacked)
+  
+  #Stack all layers
+  rasterStacked <- raster::stack(rasterStacked, B08, B01_09)
+  #rename layers
+  for(n in 1:nlayers(rasterStacked)) {
+    names(rasterStacked)[n] <- layerNames[n]
+  }
+  
   #safe as raster
   r <- writeRaster(rasterStacked, file.path(paste0(envrmt$path_summer, "/", i, ".grd")), format="raster", overwrite = TRUE)
   hdr(r, format = "ENVI")
@@ -114,7 +136,7 @@ for(i in listOfFiles){
   bricked <- raster::brick(i)
   aerialBricks <- c(aerialBricks, bricked)
 }
-aerialBricks$fun = min
+aerialBricks$fun = max
 summerRLP <-  do.call(raster::mosaic, aerialBricks)
 #rename raster layers
 for(n in 1:nlayers(summerRLP)) {
