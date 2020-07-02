@@ -48,9 +48,6 @@ summerInd <- raster::stack(summerRGB, summerSpectral)
 
 raster <-raster::writeRaster(summerInd, file.path(envrmt$path_summer, "indicesSummerRLP.grd"), format="raster", overwrite = TRUE)
 hdr(raster, format = "ENVI")
-saveRDS(IndSummerRLP, file.path(envrmt$path_summer, "indicesSummerRLP.RDS"))
-
 
 raster <-raster::writeRaster(winterInd, file.path(envrmt$path_winter, "indicesWinterRLP.grd"), format="raster", overwrite = TRUE)
 hdr(raster, format = "ENVI")
-saveRDS(IndWinterRLP, file.path(envrmt$path_winter, "indicesWinterRLP.RDS"))
