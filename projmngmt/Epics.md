@@ -1,8 +1,8 @@
 # Epic "Modell für Waldentwicklungsphasen für Rheinland-Pfalz"
 ## Story 
-  Milestone 1 Variablenextraktion
-  Milestone 2 Trainingsdatensatz vorbereiten 
-  Milestone 3 Modell-Struktur festlegen   
+ * Milestone 1 Variablenextraktion  
+ * Milestone 2 Trainingsdatensatz vorbereiten   
+ * Milestone 3 Modell-Struktur festlegen   
 
 ## Backlog
 
