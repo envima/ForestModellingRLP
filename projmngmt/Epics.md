@@ -7,8 +7,7 @@
 ## Backlog
 
 ### Incorporating Meta Data in Model training
-> Lidar Daten zw. 2009 und 2017
-> Datenaufnahme 2009
-> Was macht die Zeitdifferenz bei der Modellierung aus?
-> Aufnahmejahr als Prädiktor?
-> Vergleich mit Aufnahme 
+  Lidar Daten zw. 2009 und 2017  
+  Datenaufnahme 2009   
+  Was macht die Zeitdifferenz bei der Modellierung aus?  
+  Aufnahmejahr als Prädiktor?   
