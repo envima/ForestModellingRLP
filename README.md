@@ -1,8 +1,7 @@
+## :evergreen_tree: :deciduous_tree:	 ForestModellingRLP
 
-Forest species and habitat types for Rheinland Pfalz
+Modelling successional stages for forests in Rheinland Pfalz
 
-# :evergreen_tree: :deciduous_tree:	 ForestModellingRLP
-
-
+Projectmanagement:
 * [Epics](https://github.com/envima/ForestModellingRLP/blob/master/projmngmt/Epics.md)
 
