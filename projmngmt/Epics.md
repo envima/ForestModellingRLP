@@ -1,7 +1,7 @@
 # Epic "Modell für Waldentwicklungsphasen für Rheinland-Pfalz"
 ## Story 
  * Milestone 1 Data preparation  
- * Milestone 2 Compilation of training regions   
+ * Milestone 2 Preparation of training set   
  * Milestone 3 Model preparation and training
 
 ## Backlog
