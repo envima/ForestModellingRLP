@@ -11,3 +11,7 @@
   * Datenaufnahme 2009   
   * Was macht die Zeitdifferenz bei der Modellierung aus?  
   * Aufnahmejahr als Prädiktor?   
+
+### Choosing Subset for Pre-Model for variable selection
+  * Subset aus Trainingspolygonen wählen um Variablen vor zu selektieren
+  * Unter welchen Auswahlkirterien für das Subset ist die Vorauswahl gültig für den großen DAtensatz/das Gesamtmodell
