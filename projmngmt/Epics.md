@@ -1,3 +1,11 @@
+# Epic "Manuskript schreiben"
+Bericht oder Artikel über die gelaufene Modellierung verfassen
+
+## Story
+ * Introduction und Methoden zusammenfassen
+ * Besonderheit: Hirarische Modellstruktur für jede Baumart und Klasse
+ * Results / Auswertung
+ 
 # Epic "Modell für Waldentwicklungsphasen für Rheinland-Pfalz"
 ## Story 
  * Milestone 1 Data preparation  
