@@ -1,4 +1,5 @@
 ##37677
+## Modelling of the main tree classes for RLP
 
 rm(list=ls())
 
@@ -7,57 +8,51 @@ library(caret)
 library(foreach)
 library(doParallel)
 library(CAST)
+library(randomForest)
 
-##data
-response_type<-"quality_main_trees"
+## choose model response
+response_type<-"meta_classes_main_trees"
 
+# load modelling data
 pred_resp<-readRDS(paste0("data/modelling/", response_type, ".RDS"))
 
-summary_data<-readRDS("data/Trainingsgebiete_RLP/summary_train_data.RDS")
+
+### Initialise Leave-Location out cv
+## Main difference in the modelling strategy: we combine multiple location in the folds
+# sample a ten fold cv stratified after the main tree species (BAGRu)
+# spacevar = "FAT__ID" divides the polygon IDs into different folds
+# CAST version 0.4.2
+indices <- CreateSpacetimeFolds(pred_resp, spacevar = "FAT__ID",k=10, class = "BAGRu")
 
 
 
-
-k <- summary_data$number_of_distinct_locations[summary_data$data_set==response_type][1] # Anzahl der BufferID's pro Landnutzungsklasse
-uniqueSites <- unique(pred_resp[,c("FAT__ID","Quality")])
-uniqueSites$ID <- 1:nrow(uniqueSites)
-folds <- createFolds(uniqueSites$Quality,k,list=TRUE)
-for (i in 1:length(folds)){
-  uniqueSites$Group[uniqueSites$ID%in%folds[[i]]] <- paste0("Group_",i)
-}
-pred_resp <- merge(pred_resp,uniqueSites,by.x="FAT__ID",by.y="FAT__ID")
-### Index erstellen:
-
-indices <- CreateSpacetimeFolds(pred_resp,spacevar = "Group",k=k)
-
-
-####
-
-cl <- makeCluster(k)
-registerDoParallel(cl)
+### Initialize Modelling
 
 set.seed(10)
 ctrl <- trainControl(method="cv",index = indices$index,
                      savePredictions=TRUE )
-#load and prepare dataset:
 
-#create folds for Leave Location Out Cross Validation:
 
-tgrid <- expand.grid(.mtry = seq(2, 32, by=3),
+
+# no model tuning
+tgrid <- expand.grid(.mtry = 2,
                      .splitrule = "gini",
                      .min.node.size = 1)
 
+
 predictors <- pred_resp[,2:145]
-response <- factor(pred_resp$Quality.x)
+response <- factor(pred_resp$BAGRu)
 
 #run ffs model with Leave Location out CV
+# we use randomForest now, ranger defaults to num.threads = number of CPUs available
+# we dont want to mess with double parallel
+cl <- makeCluster(10)
+registerDoParallel(cl)
 set.seed(10)
-ffsmodel <- ffs(predictors,response,metric="Kappa",method="ranger",
-                trControl=ctrl, importance="impurity", tuneGrid = tgrid)
-ffsmodel
+ffsmodel <- ffs(predictors,response, metric="Kappa", method="rf",
+                trControl=ctrl, importance = TRUE ,tuneGrid =  tgrid, ntree = 50)
 
 saveRDS(ffsmodel,paste0(response_type,"_ffs.RDS"))
-
 
 stopCluster(cl)
 #
