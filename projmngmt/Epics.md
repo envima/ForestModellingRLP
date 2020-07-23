@@ -1,3 +1,11 @@
+# Epic "Manuskript schreiben"
+Bericht oder Artikel über die gelaufene Modellierung verfassen
+
+## Story
+ * Introduction und Methoden zusammenfassen
+ * Besonderheit: Hirarische Modellstruktur für jede Baumart und Klasse
+ * Results / Auswertung
+ 
 # Epic "Modell für Waldentwicklungsphasen für Rheinland-Pfalz"
 ## Story 
  * Milestone 1 Data preparation  
@@ -15,3 +23,6 @@
 ### Choosing Subset for Pre-Model for variable selection
   * Subset aus Trainingspolygonen wählen um Variablen vor zu selektieren
   * Unter welchen Auswahlkirterien für das Subset ist die Vorauswahl gültig für den großen DAtensatz/das Gesamtmodell
+
+### Death to Kappa
+  * There are alternatives to Kappa and we should try them out. 
