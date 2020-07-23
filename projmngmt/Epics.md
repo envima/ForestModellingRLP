@@ -23,3 +23,6 @@ Bericht oder Artikel über die gelaufene Modellierung verfassen
 ### Choosing Subset for Pre-Model for variable selection
   * Subset aus Trainingspolygonen wählen um Variablen vor zu selektieren
   * Unter welchen Auswahlkirterien für das Subset ist die Vorauswahl gültig für den großen DAtensatz/das Gesamtmodell
+
+### Death to Kappa
+  * There are alternatives to Kappa and we should try them out. 
