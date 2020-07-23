@@ -2,11 +2,17 @@
 
 rm(list=ls())
 
-
 library(caret)
-#library(foreach)
-#library(doParallel)
+library(foreach)
+library(doParallel)
 library(CAST)
+library(ranger)
+library(telegram.bot)
+library(randomForest)
+
+bot <- Bot(token = readLines("token.txt"))
+alert_chats <- c("-361124846","-368020260")
+
 
 ##data
 response_type<-"meta_classes_diverse"
@@ -15,26 +21,21 @@ pred_resp<-readRDS(paste0("data/modelling/", response_type, ".RDS"))
 
 summary_data<-readRDS("data/Trainingsgebiete_RLP/summary_train_data.RDS")
 
+indices <- CreateSpacetimeFolds(pred_resp, spacevar = "FAT__ID",k=10, class = "BAGRu")
 
 
-
-k <- summary_data$number_of_distinct_locations[summary_data$data_set==response_type][1] # Anzahl der BufferID's pro Landnutzungsklasse
-uniqueSites <- unique(pred_resp[,c("FAT__ID","BAGRu")])
-uniqueSites$ID <- 1:nrow(uniqueSites)
-folds <- createFolds(uniqueSites$BAGRu,k,list=TRUE)
-for (i in 1:length(folds)){
-  uniqueSites$Group[uniqueSites$ID%in%folds[[i]]] <- paste0("Group_",i)
-}
-pred_resp <- merge(pred_resp,uniqueSites,by.x="FAT__ID",by.y="FAT__ID")
-### Index erstellen:
-
-indices <- CreateSpacetimeFolds(pred_resp,spacevar = "Group",k=k)
 
 
 ####
+ncores = 50
 
-cl <- makeCluster(k)
-registerDoParallel(cl)
+a <- Sys.info()
+for(i in 1:length(alert_chats)){bot$send_message(chat_id = alert_chats[i],text = paste0("Initiated calculations for response type ",response_type,
+                                                                                        " calculating on computer ", a[names(a)=="nodename"],
+                                                                                        " on ", ncores, " cores "," by user ", a[names(a)=="user"], 
+                                                                                        " I will alert you when calculations are finished."
+))
+}
 
 set.seed(10)
 ctrl <- trainControl(method="cv",index = indices$index,
@@ -43,21 +44,34 @@ ctrl <- trainControl(method="cv",index = indices$index,
 
 #create folds for Leave Location Out Cross Validation:
 
-tgrid <- expand.grid(.mtry = seq(2, 32, by=3),
+tgrid <- expand.grid(.mtry = 2,
                      .splitrule = "gini",
                      .min.node.size = 1)
 
+
 predictors <- pred_resp[,2:145]
-response <- factor(pred_resp$BAGRu.x)
+response <- factor(pred_resp$BAGRu)
 
 #run ffs model with Leave Location out CV
 set.seed(10)
-ffsmodel <- ffs(predictors,response,metric="Kappa",method="ranger",
-                trControl=ctrl, importance="impurity", tuneGrid = tgrid)
+cl <- makeCluster(ncores)
+registerDoParallel(cl)
+
+ffsmodel <- ffs(predictors,response, metric="Kappa", method="rf",
+                trControl=ctrl, importance = TRUE ,tuneLength =  1, ntree = 50)
+mod <- train(x = predictors, y = response, method = "ranger", metric="Kappa", 
+             trControl=ctrl, importance="impurity", tuneGrid = tgrid, num.trees = 50)
+mod
 ffsmodel
 
-saveRDS(ffsmodel,paste0(response_type,"_ffs.RDS"))
-
-
 stopCluster(cl)
+saveRDS(mod,ffsmodel,paste0(response_type,"_ffs.RDS"))
+for(i in 1:length(alert_chats)){bot$send_message(chat_id = alert_chats[i],
+                                                 text = paste0("Finished calculations for response type ",response_type,
+                                                               " on computer ", a[names(a)=="nodename"], 
+                                                               " initiated by user ", a[names(a)=="user"]
+                                                 )
+)
+}
+
 #
