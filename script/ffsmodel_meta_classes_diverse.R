@@ -11,7 +11,7 @@ library(telegram.bot)
 library(randomForest)
 
 bot <- Bot(token = readLines("token.txt"))
-alert_chats <- c("-361124846","-368020260")
+alert_chats <- c("-361124846")#,"-368020260")
 
 
 ##data
@@ -65,7 +65,7 @@ mod
 ffsmodel
 
 stopCluster(cl)
-saveRDS(mod,ffsmodel,paste0(response_type,"_ffs.RDS"))
+save(mod,ffsmodel,paste0(response_type,"_ffs.RData"))
 for(i in 1:length(alert_chats)){bot$send_message(chat_id = alert_chats[i],
                                                  text = paste0("Finished calculations for response type ",response_type,
                                                                " on computer ", a[names(a)=="nodename"], 
