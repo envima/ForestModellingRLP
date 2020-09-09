@@ -23,11 +23,18 @@ Epic 1: Publication of Forest modelling paper
 
     - [x] Stephan: diese Lidar Indices fuer die Waldflaechen 20 x 20 m ausspucken
 
-    - [ ] Prediction für RLP 
+    - [ ] Prediction für RLP (10.09.2020)
 
     - [ ] AOA Berechnen
 
-    - [ ] Methoden aus Stoffels et al. raussuchen und mit unseren vergleichen
+    - [x] Methoden aus Stoffels et al. raussuchen und mit unseren vergleichen
+        - Frühling und Sommer kein Winter
+        - kein Lidar zum Trainieren nur zum Validieren
+        - RapidEye und Spot-4 und 5
+        - Clusteranalyse kein RandomForest
+        - Modelle wurden Szenenweise gerechnet
+        - Drei gleiche Phasen
+        - Baumklassen nur die Baumarten die am häufigsten in RP vorkommen
 
 * Story 4 Manuskript Struktur
 
