@@ -17,11 +17,11 @@ Epic 1: Publication of Forest modelling paper
 
 * Story 3 RLP Prediction and AOA Berechnung
 
-    - [ ] aus allen Modellen Lidar Indice raussuchen
+    - [x] aus allen Modellen Lidar Indice raussuchen
 
-    - [ ] RLP auf Wald / Nicht-Wald beschneiden
+    - [x] RLP auf Wald / Nicht-Wald beschneiden
 
-    - [ ] Stephan: diese Lidar Indices fuer die Waldflaechen 30 x 30 m ausspucken
+    - [x] Stephan: diese Lidar Indices fuer die Waldflaechen 20 x 20 m ausspucken
 
     - [ ] Prediction für RLP 
 
