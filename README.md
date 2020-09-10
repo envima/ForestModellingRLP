@@ -23,7 +23,12 @@ Epic 1: Publication of Forest modelling paper
 
     - [x] Stephan: diese Lidar Indices fuer die Waldflaechen 20 x 20 m ausspucken
 
-    - [ ] Prediction für RLP (10.09.2020)
+    - [X] Prediction für RLP (./scripts/prediction_main.R)
+        - Prediction der Hauptbaumarten liegt unter ./predictions inkl. QGIS-Projekt
+        Nächste Schritte Lisa:
+        - [ ] Prediction für die diversen Baumarten
+        - [ ] Bei Kiefer fehlt im Modell die Qualifizierungsphase (gab nur 16 Polygone)
+        - [ ] Die Bundeswaldinventurdaten werden für den Einsatz zu Validierung geprüft
 
     - [ ] AOA Berechnen
 
