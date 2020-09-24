@@ -23,7 +23,7 @@ aoa_diverse <- CAST::aoa(
                       train = NULL,
                       weight = NA,
                       variables = "all",
-                      thres = 0.95, # numeric vector of probability of DI in training data, with values in [0,1]?
+                      thres = 0.95, # numeric vector of probability of DI in training data, with values in [0,1]
                       folds = NULL
 )
 end_time <- Sys.time()
