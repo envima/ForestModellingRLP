@@ -2,9 +2,6 @@
 
 Modelling successional stages for forests in Rheinland Pfalz
 
-Projectmanagement:
-* [Epics](https://github.com/envima/ForestModellingRLP/blob/master/projmngmt/Epics.md)
-
 Epic 1: Publication of Forest modelling paper
 
 * Story 1 Data preparation
@@ -31,7 +28,7 @@ Epic 1: Publication of Forest modelling paper
 
 
     - [ ] AOA Berechnen (Nico, Marvin)
-      - ?wirft AOA Gebiete im Süden mit Mischpixeln raus? 
+      - ?wirft AOA Gebiete im Süden mit Mischpixeln raus?
 
     - [x] Methoden aus Stoffels et al. raussuchen und mit unseren vergleichen
         - Frühling und Sommer kein Winter
