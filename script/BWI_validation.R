@@ -35,5 +35,6 @@ val <- na.omit(rbind (data.frame(BWI = pred_extr$Pred_No, PRED = pred_extr$V1),
                       )
                )
 
+# confusion Matrix
 caret::confusionMatrix(data = as.factor(val$PRED), reference = as.factor(val$BWI))
 
