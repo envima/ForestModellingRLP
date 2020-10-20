@@ -1,6 +1,20 @@
-# name: BWI_validation.R
-# date: 19.10.2020
-# data: 
+###########################################################
+# name: BWI_validation.R                                  #
+# date: 19.10.2020                                        #
+# data: - BWI shapefiles of 10 m radius for each corner   #
+#       - prediction raster                               #
+#         -> classes:                                     #
+#             1 Buche                                     #
+#             2 Douglasie                                 #
+#             3 Eiche                                     #
+#             4 Fichte                                    #
+#             5 Kiefer                                    #
+#             6 Laerche                                   #
+#             7 kurlebige Laubbaeume                      #
+#             8 langlebige Laubbaeume                     #
+#             9 Tannen                                    #
+###########################################################
+
 
 
 # 1 - set up
@@ -37,4 +51,5 @@ val <- na.omit(rbind (data.frame(BWI = pred_extr$Pred_No, PRED = pred_extr$V1),
 
 # confusion Matrix
 caret::confusionMatrix(data = as.factor(val$PRED), reference = as.factor(val$BWI))
+
 
