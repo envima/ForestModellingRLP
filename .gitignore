@@ -1,4 +1,3 @@
-data/
 .Rproj.user
 .Rhistory
 .RData
@@ -7,3 +6,4 @@ pw
 token.txt
 prediction/
 aoa/
+data/stacked_selected_vars/
