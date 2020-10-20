@@ -44,6 +44,23 @@ Epic 1: Publication of Forest modelling paper
         - [ ] Validierung mit "unserem" Testdatensatz
         - [ ] Die Bundeswaldinventurdaten werden für den Einsatz zu Validierung geprüft
         - [ ] Validierung mit Daten von Bundeswaldinventur (Voraussetzung: Bundeswaldinventur Vergleichbarkeit zu unseren Modelldaten)
+        - Hauptbaumarten AOA vergleichen mit Diversen Flächen, die nicht in Training eingegangen sind. - passt das überein?
+Platzhalter:Gesprächsnotizen
+- tradeoff: Mehr Arten, unsichere Vorhersagen vs. weniger Arten vorhersagen, sicherere Vorhersage.
+
+- fallen Testpolygone durch AOA weg, weil wir sie nicht mit drin hatten. 
+
+Validierung: Rausgelassene Gebiete 
+
+    - Datensatz der extrahierten Polygone finden (Marvin) 
+
+Validierung: Vergleich mit Bundeswaldinventur
+
+Vergleich der not-AOA mit Bundeswaldinventur - was können wir nicht vorhersagen??
+
+Vergleich AOA-diverse, AOA-main
+main not-AOA -> doch AOA in diverse?
+Welche Klasse im non-AOA main ist in diverse?
 
 
 * Story 5 Manuskript Struktur
