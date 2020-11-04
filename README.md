@@ -8,3 +8,7 @@ Projectmanagement:
 Data Download:
 
 * [Data Hessenbox](https://hessenbox.uni-marburg.de/public?folderID=Mkx6Ukh1NjdvZFVRS2RyNmJXWmt2)
+
+Paper manuscript:
+
+* [Go to Manuscript](https://hessenbox.uni-marburg.de/open/MlVIRlNXVWNtRjl2eUVRbjE1V0xH/Waldmodellierung/Paper_Draft.docx)
