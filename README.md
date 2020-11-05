@@ -12,3 +12,7 @@ Data Download:
 Paper manuscript:
 
 * [Go to Manuscript](https://hessenbox.uni-marburg.de/open/MlVIRlNXVWNtRjl2eUVRbjE1V0xH/Waldmodellierung/Paper_Draft.docx)
+
+Short report: 
+
+* [Short report](https://envima.github.io/ForestModellingRLP/)
