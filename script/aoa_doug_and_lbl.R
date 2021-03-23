@@ -62,7 +62,7 @@ end_time <- Sys.time()
 
 print(paste("finished aoa doug in ", end_time - start_time, " minutes"))
 
-r <- writeRaster(aoa, "data/aoa_diverse/aoa_doug_main.grd", overwrite = TRUE) #save raster
+r <- writeRaster(aoa, "data/aoa_main/aoa_doug_main.grd", overwrite = TRUE) #save raster
 hdr(r, format = "ENVI")
-saveRDS(aoa,"data/aoa_diverse/doug_main.RDS")
+saveRDS(aoa,"data/aoa_main/aoa_doug_main.RDS")
 
