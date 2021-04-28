@@ -1,10 +1,10 @@
 # name: validation_lidar_years.R
 # date: 28.04.2021
-# data: 
-#
-#
-#
-#
+# data: - lidar recording dates as polygons
+#       - forest inventory polygons
+#       - extracted data
+#       - models
+
 
 
 # 1 - set up
@@ -13,13 +13,13 @@
 library(sf)
 library(tidyverse)
 library(caret)
-
 `%not_in%` <- purrr::negate(`%in%`)
 
 
 # 2 - load data
 #--------------
 
+# create one polygon for each year
 
 #lidar = sf::read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/Daten/Lidar/aktualitaet_laserbefliegung_21082018.shp")
 #lidar = lidar %>% 
@@ -29,7 +29,7 @@ library(caret)
 
 #sf::write_sf(lidar, "boundaries_lidar_years.gpkg")
 
-#lidar
+#load lidar recording boundaries
 lidar = read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/Daten/Lidar/boundaries_lidar_years.gpkg")
 
 # relevant class information from original polygons
