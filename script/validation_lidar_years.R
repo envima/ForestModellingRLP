@@ -43,7 +43,7 @@ polygons <- sf::st_buffer(polygons, byid=TRUE, dist=0)
 
 for(y in lidar$JahrDerBef) {
 year = lidar[lidar$JahrDerBef == y,]
-year_polygons = st_intersection(year, polygons, left = FALSE, largest = TRUE)
+year_polygons = st_intersection(year, polygons)
 
 
 # attach relevant class information to full extraction set
@@ -76,7 +76,7 @@ for(m in models){
   
   
   # load model
-  loa(paste0("data/models/", m,"_ffs.RData"))
+  mod = readRDS(paste0("data/models/", m,"_ffs.RDS"))
   valid = stats::predict(object = mod, newdata = rlp_extract_sub)
   
   val_df = data.frame(FAT__ID = rlp_extract_sub$FAT__ID,
