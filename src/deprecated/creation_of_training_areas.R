@@ -116,7 +116,7 @@ for (b in BAGrp) {
     nDatasets <- wefl_WGS84_BAZ_5Loss[wefl_WGS84_BAZ_5Loss$BAGrp == b & wefl_WGS84_BAZ_5Loss$Phase == p,] # combine each Phase with each tree species
     trainingData <- rbind(trainingData, do.call(data.frame,setNames(as.list(c(b, p, nrow(nDatasets))), names(trainingData)))) # write in dataframe
     if (nrow(nDatasets) < 100) {
-      message("Baumartengruppe ", b, " hat nur ", nrow(nDatasets), " Trainingsdatensätze in Phase ", p)
+      message("Baumartengruppe ", b, " hat nur ", nrow(nDatasets), " Trainingsdatensï¿½tze in Phase ", p)
     }
   }
 }
