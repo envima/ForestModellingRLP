@@ -1,92 +1,62 @@
-#' @name 008_prediction.R
+#' @name 009_prediction.R
 #' @docType function
 #' @description
-#' @param 
+#' @param lstSpecies
+#' @param lstQuality
+#' 
 #' 
 
-# input 
-#-------------------------
 
-fileNameSpecies = "main"
-
-#list with quality models
-lstQuality <-list.files(envrmt$models, pattern="quality", full.names = TRUE)
-lstSpecies <-list.files(envrmt$models, pattern=c("main", "diverse"), full.names = TRUE)
-
-#folderModels = 
-#folderPredictions = 
-
-
-#!!!!!!!!!!!!!!!!
-  
-# 1 - prediction main/diverse model
-#-------------------------------
-
-function(lstSpecies, lstQuality) {
-
-
+prediction <- function(lstSpecies = c("main", "diverse"), lstQuality = "quality") {
 
   for (species in lstSpecies)  {
-    mod <- readRDS(species)
-    selvar <- raster::stack(envrmt$, fileNameSpecies, ".grd")
+    
+    mod <- readRDS(list.files(envrmt$models, pattern= species, full.names = TRUE))
+    # do not choose terra package, raster attributes are still an issue here
+    selvar <- raster::stack(file.path(envrmt$selected_variables,paste0(species, ".grd")))
     
     #prediction for species model
     start_time <- Sys.time()
-    prediction <- terra::predict(selvar, mod)
+    prediction <- terra::predict(selvar, mod, na.rm = TRUE)
     end_time <- Sys.time()
-    cat("predicted ")
-    end_time - start_time
-
-
-if (dir.exists("D:/forest_modelling/ForestModellingRLP/data/prediction")) {
-
-  r <- writeRaster(prediction, "prediction/diverse_trees_pred.grd", overwrite = TRUE) #save raster
-  hdr(r, format = "ENVI")
-  saveRDS(prediction, "prediction/diverse_trees_pred.RDS") } else
-  
-  {dir.create("D:/forest_modelling/ForestModellingRLP/data/prediction")
-    cat("Create new folder 'prediction' in data folder.\n")
-    r <- writeRaster(prediction, "prediction/diverse_trees_pred.grd", overwrite = TRUE) #save raster
+    cat("predicted ", species, " model in ",  end_time - start_time, "minutes\n")
+   
+    # safe prediction
+    r <- writeRaster(prediction, file.path(envrmt$prediction, paste0(species, "_pred.grd")), overwrite = TRUE)
     hdr(r, format = "ENVI")
-    saveRDS(prediction, "prediction/diverse_trees_pred.RDS") }
+    saveRDS(prediction, file.path(envrmt$prediction, paste0(species, "_pred.RDS")))
+  
+    
+    
+    class = levels(prediction)[[1]]
+    lst <- list.files(envrmt$models, pattern= lstQuality, full.names = FALSE)
+    
+    for (i in lstQuality) { # beginning for loop
       
-
-
-
-# 3 - predict the successional phases ####
-#-----------------------------------------
-
-class = levels(prediction)[[1]]
-
-predClass <- 0
-
-for (i in dat_lst) { # beginning for loop
-  
-  response_type <- gsub(".RDS|quality_|_ffs", "", i)
-  
-  mask <- prediction
-  predClass <- as.integer(class %>% filter(value == response_type) %>% select(ID))
-  mask[mask != predClass] <- NA
-  
-  #!!!!!!!!!!!!
-  model <- readRDS(i)
-  selvar <- raster::stack(paste0("data/stacked_selected_vars/", response_type, ".grd"))
-  #!!!!!!!!!!!!!!!!!!!!!
-  selvar <- mask(selvar, mask)
-  
-  start_time <- Sys.time()
-  pred <- predict(selvar, model)
-  end_time <- Sys.time()
-  
-  print(paste("finished prediction ", response_type, "in ", end_time - start_time, " minutes"))
-  
-  r <- writeRaster(pred, paste0("prediction/", response_type, "_diverse.grd"), overwrite = TRUE) #save raster
-  hdr(r, format = "ENVI")
-  saveRDS(pred, paste0("prediction/", response_type, "_diverse.RDS"))
-  
-} # end for loop
-
-
+      # create mask
+      response_type <- gsub(".RDS|quality_|_ffs", "", i)
+      predClass <- as.integer(class %>% filter(value == response_type) %>% select(ID))
+      mask <- prediction
+      mask[mask != predClass] <- NA
+      
+      # load model and selected variables
+      model <- readRDS(file.path(envrmt$models, i))
+      selvar <- raster::stack(file.path(envrmt$selected_variables, paste0(response_type, ".grd")))
+      selvar <- mask(selvar, mask) # apply mask
+      
+      # predict
+      start_time <- Sys.time()
+      pred <- predict(selvar, model)
+      end_time <- Sys.time()
+      
+      print(paste("finished prediction ", response_type, "in ", end_time - start_time, " minutes"))
+      
+      r <- writeRaster(pred, file.path(envrmt$prediction, paste0(response_type, "_", species, "_pred.grd")), overwrite = TRUE) #save raster
+      hdr(r, format = "ENVI")
+      saveRDS(pred, file.path(envrmt$prediction, paste0(response_type, "_", species, "_pred.RDS")))
+                                          
+    } # end for loop
+  } # end for loop
 } # end of function
 
 
