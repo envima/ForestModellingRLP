@@ -1,4 +1,4 @@
-#' @name 003_merge_crop_raster.R
+#' @name 002_merge_crop_raster.R
 #' @doctype function
 #' @description
 #' @param listOfFiles

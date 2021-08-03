@@ -21,38 +21,26 @@ source(file.path(root_folder, "src/functions/000_setup.R"))
 #                              summer: Sentinel-2B. Tiles: 2019/06/27: T31UGR, T32ULA, T32ULB, T32ULV, T32UMB
 #                                                         2019/06/24: T32UMV, T32UMA, 
 #                                                          
-#polygon of RLP with buffer of 200m, source: https://opendata-esri-de.opendata.arcgis.com/datasets/esri-de-content::landesgrenze-rlp/data
+#                     polygon of RLP with buffer of 200m, source: https://opendata-esri-de.opendata.arcgis.com/datasets/esri-de-content::landesgrenze-rlp/data
 
 
-# 1 - summer scene
-prepSentinel(resolution = 20,
-             folderNames = list.files(envrmt$summer, full.names = TRUE),
-             fileNames = list.files(envrmt$summer, full.names = FALSE),
-             outputPath = envrmt$summer)
-
-# 1 - winter scene
-prepSentinel(resolution = 20,
-             folderNames = list.files(envrmt$winter, full.names = TRUE),
-             fileNames = list.files(envrmt$winter, full.names = FALSE),
-             outputPath = envrmt$winter)
-
-
-
-summer = merge_crop_raster(listOfFiles = list.files(envrmt$summer, pattern = glob2rx("*.grd"), full.names = TRUE),
-                           border = read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Landesgrenze_RLP/Landesgrenze_RLP.shp"),
-                           borderCrs = TRUE,
-                           buffer = 200)
-
-# write raster
-
-winter = merge_crop_raster(listOfFiles = list.files(envrmt$winter, pattern = glob2rx("*.grd"), full.names = TRUE),
-                           border = read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Landesgrenze_RLP/Landesgrenze_RLP.shp"),
-                           borderCrs = TRUE,
-                           buffer = 200)
-
-
-# write raster
-
+for (i in c("summer", "winter")) {
+  
+  prepSentinel(resolution = 20,
+               folderNames = list.files(envrmt[[i]], full.names = TRUE),
+               fileNames = list.files(envrmt[[i]], full.names = FALSE),
+               outputPath = envrmt[[i]])
+  
+  sentinel = merge_crop_raster(listOfFiles = list.files(envrmt[[i]], pattern = glob2rx("*.grd"), full.names = TRUE),
+                               border = read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Landesgrenze_RLP/Landesgrenze_RLP.shp"),
+                               borderCrs = TRUE,
+                               buffer = 200)
+  
+  ind = sentinelIndices(filePath = sentinel,
+                        outPath = file.path(envrmt[[i]], paste0("sentinel_", i, ".grd")),
+                        suffix = paste0("_", i))
+  
+}
 
 
 # 2. Hansendaten
