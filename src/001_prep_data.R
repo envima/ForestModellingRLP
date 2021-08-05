@@ -56,16 +56,19 @@ lstHansen = list(
   c(list.files(file.path(envrmt$hansen), pattern = "lossyear", full.names = TRUE)),
   c(list.files(file.path(envrmt$hansen), pattern = "gain", full.names = TRUE)))
 
-hansen = lapply(lstHansen, function(i) {
-  merge_crop_raster(listOfFiles = unlist(i),
-                    border = read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Landesgrenze_RLP/Landesgrenze_RLP.shp"),
-                    changeBorderCrs = TRUE,
-                    buffer = 200)
+hansen = list()
+for (i in 1:length(lstHansen)) {
+  hansen[[i]] = merge_crop_raster(listOfFiles = lstHansen[[i]],
+                                  border = read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Landesgrenze_RLP/Landesgrenze_RLP.shp"),
+                                  changeBorderCrs = TRUE,
+                                  buffer = 200)
 }
-) # end lapply
 
 
-forestMask = prep_hansen(hansen, changeCRS = "epsg:25832")
+forestMask = prep_hansen(treeCover = rast(hansen[[1]]),
+                         loss = rast(hansen[[2]]),
+                         gain = rast(hansen [[3]]),
+                         changeCRS = "epsg:25832")
 # same resolution as Sentinel:
 forestMask = terra::resample(forestMask, terra::rast(file.path(envrmt$summer, "sentinel_summer.grd")))
 # safe raster
