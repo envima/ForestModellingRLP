@@ -79,24 +79,13 @@ rm(lstHansen, hansen, forestMask)
 # 3 - forest inventory data ####
 #------------------------------#
 
-
-# input
-#load forest management data
-FID = sf::read_sf(file.path(envrmt$FID, "wefl_UTM_BAZ.shp"))
-forestLoss = terra::rast(file.path(envrmt$hansen, "forestMask.tif"))
-identicalCrs = FALSE
-treeSpeciesPurity = 80
-
-
-
-
-
 fid = prep_forest_inventory(FID = sf::read_sf(file.path(envrmt$FID, "wefl_UTM_BAZ.shp")),
-                            forestLoss = terra::rast(file.path(envrmt$hansen, "forestMask.tif")),
+                            forestMask = terra::rast(file.path(envrmt$hansen, "forestMask.tif")),
                             identicalCrs = FALSE,
-                            treeSpeciesPurity = 80)
+                            purity = 80,
+                            purityCol = "proz",
+                            idCol = "FAT__ID")
 
-sf::write_sf(wefl_WGS84_BAZ_5Loss, file.path(envrmt$path_Exp_Shape_Wefl_UTM, "wefl_WGS84_BAZ_5Loss.shp"))
-wefl_WGS84_BAZ_5Loss <- sf::read_sf(file.path(envrmt$path_Exp_Shape_Wefl_UTM, "wefl_WGS84_BAZ_5Loss.shp"))
+sf::write_sf(fid, file.path(envrmt$FID, "FID_filtered.gpkg"))
 
 
