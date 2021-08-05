@@ -1,4 +1,4 @@
-#' @name 009_prediction.R
+#' @name 009_prediction_and_aoa.R
 #' @docType function
 #' @description
 #' @param lstSpecies
@@ -7,7 +7,7 @@
 #' 
 
 
-prediction <- function(lstSpecies = c("main", "diverse"), lstQuality = "quality") {
+prediction_aoa <- function(lstSpecies = c("main", "diverse"), lstQuality = "quality") {
 
   for (species in lstSpecies)  {
     
@@ -25,9 +25,20 @@ prediction <- function(lstSpecies = c("main", "diverse"), lstQuality = "quality"
     r <- writeRaster(prediction, file.path(envrmt$prediction, paste0(species, "_pred.grd")), overwrite = TRUE)
     hdr(r, format = "ENVI")
     saveRDS(prediction, file.path(envrmt$prediction, paste0(species, "_pred.RDS")))
-  
+    #---
     
+    # aoa
+    start_time <- Sys.time()
+    aoa <- CAST::aoa(newdata = selvar,
+                     model = mod)
+    end_time <- Sys.time()
+    cat("calculated aoa for ", species, " model in ",  end_time - start_time, "minutes\n")
     
+    r <- writeRaster(aoa, file.path(envrmt$aoa, paste0(species, "_aoa.grd")), overwrite = TRUE)
+    hdr(r, format = "ENVI")
+    # ---
+    
+    # predict quality
     class = levels(prediction)[[1]]
     lst <- list.files(envrmt$models, pattern= lstQuality, full.names = FALSE)
     
@@ -44,7 +55,7 @@ prediction <- function(lstSpecies = c("main", "diverse"), lstQuality = "quality"
       selvar <- raster::stack(file.path(envrmt$selected_variables, paste0(response_type, ".grd")))
       selvar <- mask(selvar, mask) # apply mask
       
-      # predict
+      # prediction
       start_time <- Sys.time()
       pred <- predict(selvar, model)
       end_time <- Sys.time()
@@ -54,7 +65,19 @@ prediction <- function(lstSpecies = c("main", "diverse"), lstQuality = "quality"
       r <- writeRaster(pred, file.path(envrmt$prediction, paste0(response_type, "_", species, "_pred.grd")), overwrite = TRUE) #save raster
       hdr(r, format = "ENVI")
       saveRDS(pred, file.path(envrmt$prediction, paste0(response_type, "_", species, "_pred.RDS")))
-                                          
+      #---
+      
+      # aoa
+      start_time <- Sys.time()
+      aoa <- CAST::aoa(newdata = selvar,
+                       model = model)
+      end_time <- Sys.time()
+      print(paste("finished aoa for ", response_type, "in ", end_time - start_time, " minutes"))
+      
+      r <- writeRaster(aoa, file.path(envrmt$aoa, paste0(species, "_aoa.grd")), overwrite = TRUE)
+      hdr(r, format = "ENVI")
+      # ---
+                                         
     } # end for loop
   } # end for loop
 } # end of function

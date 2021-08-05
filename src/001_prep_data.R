@@ -11,9 +11,12 @@ library(rprojroot)
 root_folder = find_rstudio_root_file()
 
 source(file.path(root_folder, "src/functions/000_setup.R"))
+# crs for all the data: "epsg:25832"!
+#
+#+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no
 
-
-
+# 1 - Sentinel data ####
+#----------------------#
 
 #data: sentinel tiles; source: https://scihub.copernicus.eu/dhus/#/home
 #                              winter: Sentinel-2B. Tiles: 2019/02/27: T31UGR, T32ULA, T32ULB, T32ULV, T32UMB
@@ -43,34 +46,52 @@ for (i in c("summer", "winter")) {
 }
 
 
-# 2. Hansendaten
-#-----------------------------
+# 2. Hansen forest cover ####
+#---------------------------#
 
 
+#load data tiles to list
+lstHansen = list(
+  c(list.files(file.path(envrmt$hansen), pattern = "treecover2000", full.names = TRUE)),
+  c(list.files(file.path(envrmt$hansen), pattern = "lossyear", full.names = TRUE)),
+  c(list.files(file.path(envrmt$hansen), pattern = "gain", full.names = TRUE)))
+
+hansen = lapply(lstHansen, function(i) {
+  merge_crop_raster(listOfFiles = unlist(i),
+                    border = read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Landesgrenze_RLP/Landesgrenze_RLP.shp"),
+                    changeBorderCrs = TRUE,
+                    buffer = 200)
+}
+) # end lapply
 
 
+forestMask = prep_hansen(hansen, changeCRS = "epsg:25832")
+# same resolution as Sentinel:
+forestMask = terra::resample(forestMask, terra::rast(file.path(envrmt$summer, "sentinel_summer.grd")))
+# safe raster
+terra::writeRaster(forestMask, file.path(envrmt$hansen, "forestMask.tif"), overwrite = TRUE)
+rm(lstHansen, hansen, forestMask)
 
 
-# 3. Waldeinrichtungsdaten
-# 4. 
+# 3 - forest inventory data ####
+#------------------------------#
 
 
-# # load tree cover tiles for RLP year 2000 
-treeCover2000South <- raster::brick(file.path(envrmt$path_hansen, "Hansen_GFC-2018-v1.6_treecover2000_50N_000E.tif"))
-treeCover2000North <- raster::brick(file.path(envrmt$path_hansen, "Hansen_GFC-2018-v1.6_treecover2000_60N_000E.tif"))
-
-
-# 3 - forest inventory data
-#----------------
 # input
 #load forest management data
-wefl_UTM_BAZ <- sf::read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Exp_Shape_Wefl_UTM/wefl_UTM_BAZ.shp")
-forestLoss <- terra::rast("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/hansen/lossYear2018RLP.tif")
+FID = sf::read_sf(file.path(envrmt$FID, "wefl_UTM_BAZ.shp"))
+forestLoss = terra::rast(file.path(envrmt$hansen, "forestMask.tif"))
 identicalCrs = FALSE
-library(tidyverse)
-library(terra)
 treeSpeciesPurity = 80
 
+
+
+
+
+fid = prep_forest_inventory(FID = sf::read_sf(file.path(envrmt$FID, "wefl_UTM_BAZ.shp")),
+                            forestLoss = terra::rast(file.path(envrmt$hansen, "forestMask.tif")),
+                            identicalCrs = FALSE,
+                            treeSpeciesPurity = 80)
 
 sf::write_sf(wefl_WGS84_BAZ_5Loss, file.path(envrmt$path_Exp_Shape_Wefl_UTM, "wefl_WGS84_BAZ_5Loss.shp"))
 wefl_WGS84_BAZ_5Loss <- sf::read_sf(file.path(envrmt$path_Exp_Shape_Wefl_UTM, "wefl_WGS84_BAZ_5Loss.shp"))

@@ -5,16 +5,22 @@
 #' @param 
 #' @return 
 
+## input
+polygons = sf::read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Exp_Shape_Wefl_UTM/Trainingsgebiete_RLP/Etb_Qua_Dim_Rei_WGS84.shp") %>% st_drop_geometry()
+# relevant class information from original polygons
+polygons = polygons[,c("FAT__ID", "Phase", "BAGRu")]
+
+rlp_extract = readRDS(file.path(envrmt$model_training_data, "RLP_extract.RDS"))
+
+# start
 
 `%not_in%` <- purrr::negate(`%in%`)
 
-# relevant class information from original polygons
-polygons = st_read("data/Trainingsgebiete_RLP/Etb_Qua_Dim_Rei_WGS84.gpkg") %>% st_drop_geometry()
-polygons = polygons[,c("FAT__ID", "Phase", "BAGRu")]
+
 
 # attach relevant class information to full extraction set
 # format properly
-rlp_extract = readRDS("data/model_training_data/RLP_extract.RDS")
+
 rlp_extract = merge(rlp_extract, polygons, by = "FAT__ID")
 rlp_extract$surface_intensity_mean = NULL
 rlp_extract$ID = NULL
@@ -23,11 +29,11 @@ rlp_extract$Quality = paste0(rlp_extract$BAGRu, "_", rlp_extract$Phase)
 
 
 # validation for each model
-models = c("meta_classes_main_trees", "meta_classes_diverse")
+models = c("main", "diverse")
 
 for(m in models){
   meta = list()
-  training_set = readRDS(paste0("data/model_training_data/", m,".RDS"))
+  training_set = readRDS(file.path(envrmt$model_training_data, paste0(m,".RDS")))
   
   meta$'Model' = m
   meta$'Number of training polygons' = length(unique(training_set$FAT__ID))
@@ -41,7 +47,7 @@ for(m in models){
   
   
   # load model
-  mod = readRDS(paste0("data/models/", m,"_ffs.RDS"))
+  mod = readRDS(file.path(envrmt$models, paste0(m, "_ffs.RDS")))
   valid = stats::predict(object = mod, newdata = rlp_extract_sub)
   
   val_df = data.frame(FAT__ID = rlp_extract_sub$FAT__ID,
