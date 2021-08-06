@@ -42,7 +42,7 @@ prep_forest_inventory <- function(FID, forestMask, identicalCrs = FALSE, purity 
   
   `%not_in%` <- purrr::negate(`%in%`)
   # select polygons that have less than 5 percent forest loss, drop everything else
-  FID2 <- FID %>% filter((!!sym(idCol)) %not_in% r)
+  FID <- FID %>% filter((!!sym(idCol)) %not_in% r)
   
   return(FID)
 } # end function
