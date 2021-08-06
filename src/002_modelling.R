@@ -52,6 +52,24 @@ predictors <- terra::rast(list(summerRLP, winterRLP, summerIndices, winterIndice
 selected_variables()
 
 
+# 2 - balancing the data ####
+#---------------------------#
+
+# input
+extr = readRDS(file.path("data/model_training_data/RLP_extract.RDS"))
+polygons = st_read("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Exp_Shape_Wefl_UTM/Trainingsgebiete_RLP/Etb_Qua_Dim_Rei_WGS84.shp") %>% st_drop_geometry()
+polygons = polygons[,c("FAT__ID", "Phase", "BAGRu")]
+extr = merge(extr, polygons, by = "FAT__ID")
+rm(polygons)
+
+data = extr
+rm(extr)
+
+testRun = balancing(extr = data,
+                    response = "BAGRu",
+                    class = c("Fi", "Ei", "Ki", "Bu", "Dou"))
+
+
 # 2 - modelling
 #--------------
 
