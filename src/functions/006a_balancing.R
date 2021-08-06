@@ -13,6 +13,23 @@ polygons = polygons[,c("FAT__ID", "Phase", "BAGRu")]
 extr = merge(extr, polygons, by = "FAT__ID")
 rm(polygons)
 
+
+
+class_min_poly <- function(df, var) {
+  
+  # number of polygons per class
+  no_pol = df %>% 
+    group_by((!!sym(var))) %>% 
+    count() 
+  
+  # determine class with least polygons
+  no_pol_min = no_pol %>% filter(n == min(no_pol$n))
+  return(no_pol_min)
+}
+
+
+
+
 #-------------------
 extr_org = extr
 
@@ -22,17 +39,11 @@ extr = extr %>%
   group_by(BAGRu, FAT__ID) %>% 
   count()
 
-# number of polygons per class
-no_pol = extr %>% 
-  group_by(BAGRu) %>% 
-  count() 
-
-# determine class with least polygons
-no_pol_min = no_pol %>% filter(n == min(no_pol$n))
+polMin = class_min_poly(df = extr, var = "BAGRu")
 
 # create statistics for class with least polygons
 stats = extr %>% 
-  filter (BAGRu == no_pol_min[[1]]) %>% 
+  filter (BAGRu == polMin[[1]]) %>% 
   pull(n) %>%
   summary()
 
@@ -43,20 +54,13 @@ extr = extr %>% filter(n > stats[[2]],
                        n < stats[[5]]) 
 
 
-rm(no_pol, no_pol_min, stats)
-
 # count all remaining polygons. 
 # The class with the fewest determines how many are sampled per class.
-no_pol = extr %>% 
-  group_by(BAGRu) %>% 
-  count() 
-
-# Class with fewest polygons:
-no_pol_min = no_pol %>% filter(n == min(no_pol$n))
+polMin = class_min_poly(df = extr, var = "BAGRu")
 
 
 # choose random polygons from each class 
-samp = extr %>% 
+extr = extr %>% 
   group_by(BAGRu) %>% 
   dplyr::slice_sample(n = no_pol_min[[2]])
 
@@ -67,37 +71,22 @@ samp = extr %>%
 #----------------------------
 
 # merge with original datafram to get back to pixel information
-df = extr_org %>% filter(FAT__ID %in% samp$FAT__ID)
+df = extr_org %>% filter(FAT__ID %in% extr$FAT__ID)
 
 # determine number of pixel for each class
-no_pol = df %>%
-  group_by(BAGRu) %>%
-  count()
+polMin = class_min_poly(df = df, var = "BAGRu")
 
-#determine class with fewest pixel
-no_pol_min = no_pol %>% filter(n == min(no_pol$n))
 
 
 #### min pixel number dou = 12585
 #-------------------------------------
 
-
-test = df %>% 
+df = df %>% 
   group_by(BAGRu) %>%
-  dplyr::slice_sample(n = no_pol_min[[2]])
+  dplyr::slice_sample(n = polMin[[2]])
 
 
-test
-
-
-
-
-
-
-Ei_tr = Ei_pix %>% dplyr::slice_sample(n = 12585)
-
-
-Ei_tr = Ei_pix %>% dplyr::slice_sample(n = 12585)
+return(df)
 
 
 
