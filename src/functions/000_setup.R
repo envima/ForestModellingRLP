@@ -26,7 +26,10 @@ libs <- c("terra",
           "RStoolbox",
           "ggplot2",
           "ggnewscale",
-          "RColorBrewer")
+          "RColorBrewer",
+          "gt",
+          "yaml"
+)
 
 # Load libraries and create environment object to be used in other scripts for path navigation
 project_folders <- list.dirs(path = root_folder, full.names = FALSE, recursive = TRUE)
