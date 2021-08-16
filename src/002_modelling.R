@@ -65,9 +65,44 @@ rm(polygons)
 data = extr
 rm(extr)
 
-testRun = balancing(extr = data,
+#####
+#
+#  Main Modell data balancing 
+#
+###########
+main = balancing(extr = data,
                     response = "BAGRu",
                     class = c("Fi", "Ei", "Ki", "Bu", "Dou"))
+
+saveRDS(file.path(main, envrmt$model_training_data, paste0("main", ".RDS")))
+##
+#
+# diverse model data balancing
+#
+##
+diverse = balancing(extr = data,
+                    response = "BAGRu",
+                    class = c("Fi", "Ei", "Ki", "Bu", "Dou", "Lbk", "Lbl", "Lä"))
+
+saveRDS(diverse, file.path(envrmt$model_training_data, paste0("diverse", ".RDS")))
+##
+#
+# successional stages balancing
+#
+#
+data = data %>% filter(Phase != "Etb")
+data$Quality = paste0(data$BAGRu, "_", data$Phase)
+
+
+for (i in unique(data$BAGRu)) {
+  i = unique(data$BAGRu)[1]
+  df = data %>% filter(BAGRu == i)
+  quality = balancing(extr = df,
+                      response = "Quality",
+                      class = unique(df$Quality))
+  
+  saveRDS(quality, file.path(envrmt$model_training_data, paste0(i, ".RDS")))
+}
 
 
 # 2 - modelling

@@ -13,7 +13,20 @@
 require(envimaR)
 
 # Define libraries
-libs <- c("terra", "sf", "tidyverse", "caret", "foreach", "doParallel", "CAST", "telegram.bot", "randomForest", "uavRst", "RStoolbox")
+libs <- c("terra", 
+          "sf", 
+          "tidyverse", 
+          "caret", 
+          "foreach", 
+          "doParallel", 
+          "CAST", 
+          "telegram.bot", 
+          "randomForest", 
+          "uavRst", 
+          "RStoolbox",
+          "ggplot2",
+          "ggnewscale",
+          "RColorBrewer")
 
 # Load libraries and create environment object to be used in other scripts for path navigation
 project_folders <- list.dirs(path = root_folder, full.names = FALSE, recursive = TRUE)
