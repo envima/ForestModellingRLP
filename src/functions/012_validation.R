@@ -9,8 +9,8 @@
 polygons = sf::read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Exp_Shape_Wefl_UTM/Trainingsgebiete_RLP/Etb_Qua_Dim_Rei_WGS84.shp") %>% st_drop_geometry()
 # relevant class information from original polygons
 polygons = polygons[,c("FAT__ID", "Phase", "BAGRu")]
+rlp_extract = readRDS("C:/Users/Lisa Bald/Uni_Marburg/forest_modelling_rlp/ForestModellingRLP/data/model_training_data/RLP_extract.RDS")
 
-rlp_extract = readRDS(file.path(envrmt$model_training_data, "RLP_extract.RDS"))
 
 models = c("main", "diverse")
 idCol = "FAT__ID"
@@ -19,7 +19,9 @@ responseCol = "BAGRu"
 
 #---------------------------
 
-
+validation = function(models = c("main", "diverse"), 
+                      idCol = "FAT__ID", 
+                      responseCol = "BAGRu") {
 
 `%not_in%` <- purrr::negate(`%in%`)
 
@@ -67,4 +69,4 @@ for(m in models){
   yaml::write_yaml(yaml::as.yaml(meta), file = paste0(file.path(envrmt$validation), m, "_meta.yaml"))
 }
 
-
+} # end of function
