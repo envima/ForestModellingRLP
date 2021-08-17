@@ -16,7 +16,24 @@ source(file.path(root_folder, "src/functions/000_setup.R"))
 # 1 - validation ####
 #-------------------#
 
+polygons = sf::read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Exp_Shape_Wefl_UTM/Trainingsgebiete_RLP/Etb_Qua_Dim_Rei_WGS84.shp") %>% st_drop_geometry()
+# relevant class information from original polygons
+polygons = polygons[,c("FAT__ID", "Phase", "BAGRu")]
+rlp_extract = readRDS("C:/Users/Lisa Bald/Uni_Marburg/forest_modelling_rlp/ForestModellingRLP/data/model_training_data/RLP_extract.RDS")
+# attach relevant class information to full extraction set
+# format properly
+rlp_extract = merge(rlp_extract, polygons, by = "FAT__ID")
+rm(polygons)
+rlp_extract$surface_intensity_mean = NULL
+rlp_extract$ID = NULL
 
+rlp_extract$Quality = paste0(rlp_extract$BAGRu, "_", rlp_extract$Phase)
+
+
+
+models = c("main", "diverse")
+idCol = "FAT__ID"
+responseCol = "BAGRu"
 
 
 
@@ -37,10 +54,10 @@ main
 #-----------------------------------------------#
 
 lstFiles = list.files("D:/forest_modelling/ForestModellingRLP/data/validation/", full.names = TRUE, pattern = glob2rx("quality*confusionmatrix.RDS"))
-
 cm <- readRDS(lstFiles[[1]])
 cm <- as.data.frame(cm$table)
 
+levels(cm$Observed)
 cm$Observed <- factor(cm$Observed,levels = c("Bu_Qua", "Bu_Dim", "Bu_Rei"))
 cm$Predicted <- factor(cm$Predicted,levels = c(  "Bu_Rei",  "Bu_Dim","Bu_Qua"))
 
