@@ -33,18 +33,27 @@ main= confusionMatrix_ggplot(caretConfMatr = df)
 main
 
 
-# 3 - successional stages confusion matrix ####
-#---------------------------------------------#
+# 3 - successional stages confusion matrices ####
+#-----------------------------------------------#
 
-cm <- readRDS("D:/forest_modelling/ForestModellingRLP/data/validation/quality_beech_confusionmatrix.RDS")
+lstFiles = list.files("D:/forest_modelling/ForestModellingRLP/data/validation/", full.names = TRUE, pattern = glob2rx("quality*confusionmatrix.RDS"))
+
+cm <- readRDS(lstFiles[[1]])
 cm <- as.data.frame(cm$table)
 
 cm$Observed <- factor(cm$Observed,levels = c("Bu_Qua", "Bu_Dim", "Bu_Rei"))
 cm$Predicted <- factor(cm$Predicted,levels = c(  "Bu_Rei",  "Bu_Dim","Bu_Qua"))
 
 
-####
+plot_Buche = successional_stages_cm(cm)
 
+cm <- readRDS("D:/forest_modelling/ForestModellingRLP/data/validation/quality_pine_confusionmatrix.RDS")
+cm <- as.data.frame(cm$table)
+
+cm$Observed <- factor(cm$Observed,levels = c("Ki_Dim", "Ki_Rei"))
+cm$Predicted <- factor(cm$Predicted,levels = c( "Ki_Rei",  "Ki_Dim"))
+
+plot_Ki = successional_stages_cm(cm)
 
 # 3 - table metadata ####
 #-----------------------#
