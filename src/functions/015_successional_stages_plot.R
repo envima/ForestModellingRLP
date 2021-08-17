@@ -1,81 +1,42 @@
-cm <- readRDS("D:/forest_modelling/ForestModellingRLP/data/validation/quality_beech_confusionmatrix.RDS")
-cm <- as.data.frame(cm$table)
+#' @name 015_successional_stages_plot.R
+#' @docType function
+#' @description 
+#' @param cm
+#' @return p ggplot
 
-cm$Observed <- factor(cm$Observed,levels = c("Bu_Qua", "Bu_Dim", "Bu_Rei"))
-cm$Predicted <- factor(cm$Predicted,levels = c(  "Bu_Rei",  "Bu_Dim","Bu_Qua"))
 
-#############
 
-library(RColorBrewer)
-library(ggplot2)
 
-ggplot(cm, aes(fill=Predicted, y=Freq, x=Observed)) + 
-  geom_bar(position="fill", stat="identity", colour = "grey20") +
-  scale_fill_viridis_d()  +
-  coord_flip() +
-  ylab("Percent")+
+successional_stages_cm <- function(cm) {
   
-  ggnewscale::new_scale_fill() +
-  geom_bar(aes(fill = Predicted,
-               size = (Predicted == "Bu_Qua" & Observed == "Bu_Qua")),
-           colour = "black", 
-           #width = .6,
-           position="fill", 
-           stat="identity",
-           alpha=0) +
-  scale_size_manual(values = c(0, 1.2),
-                    guide = "none") +
+  p = ggplot(cm, aes(fill=Predicted, y=Freq, x=Observed)) + 
+    geom_bar(position="fill", stat="identity", colour = "grey20") +
+    scale_fill_viridis_d()  +
+    coord_flip() +
+    ylab("Percent")
+  
+  lst = list()
+  
+  for (i in 1:nlevels(cm$Observed)) {
+    
+    stage = levels(cm$Observed)[i] 
+    stage <- enquo(stage)
+    
+    lst[[i]] = geom_bar(aes(fill = Predicted,
+                            size = (Predicted == !! stage & Observed == !! stage)),
+                        colour = "black", 
+                        #width = .6,
+                        position="fill", 
+                        stat="identity",
+                        alpha=0)
+    
+  }# end for loop
   
   
-  ggnewscale::new_scale_fill() +
-  geom_bar(aes(fill = Predicted,
-               size = (Predicted == "Bu_Rei" & Observed == "Bu_Rei")),
-           colour = "black", 
-           #width = .6,
-           position="fill", 
-           stat="identity",
-           alpha=0) +
-  scale_size_manual(values = c(0, 1.2),
-                    guide = "none") +
+  p = p+ ggnewscale::new_scale_fill() + 
+    lst+
+    scale_size_manual(values = c(0, 1.2),
+                      guide = "none")
   
-  ggnewscale::new_scale_fill() +
-  geom_bar(aes(fill = Predicted,
-               size = (Predicted == "Bu_Dim" & Observed == "Bu_Dim")),
-           colour = "black", 
-           #width = .6,
-           position="fill", 
-           stat="identity",
-           alpha=0) +
-  scale_size_manual(values = c(0, 1.2),
-                    guide = "none") 
   
-#------------------------------
-
-
-
-
-
-
-
-  geom_bar(
-    aes(fill = Predicted, size = (Predicted == "Bu_Qua" & Observed == "Bu_Qua")),
-    color = "black", width = .5) + 
-  scale_size_manual(values = c(0, 1.2),
-                    guide = "none")
-
-
-############
-
-
-
-ggplot(mpg, aes(class)) +  
-  
-  geom_bar(
-    aes(fill = drv, size = (drv == "4" & class == "compact")),
-    color = "black", width = .5) + 
-  scale_size_manual(values = c(0, 1.2),
-                    guide = "none")
-
-
-
-
+} # end of function

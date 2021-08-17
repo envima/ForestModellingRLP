@@ -33,6 +33,19 @@ main= confusionMatrix_ggplot(caretConfMatr = df)
 main
 
 
+# 3 - successional stages confusion matrix ####
+#---------------------------------------------#
+
+cm <- readRDS("D:/forest_modelling/ForestModellingRLP/data/validation/quality_beech_confusionmatrix.RDS")
+cm <- as.data.frame(cm$table)
+
+cm$Observed <- factor(cm$Observed,levels = c("Bu_Qua", "Bu_Dim", "Bu_Rei"))
+cm$Predicted <- factor(cm$Predicted,levels = c(  "Bu_Rei",  "Bu_Dim","Bu_Qua"))
+
+
+####
+
+
 # 3 - table metadata ####
 #-----------------------#
 
