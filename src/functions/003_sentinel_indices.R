@@ -26,17 +26,18 @@ sentinelIndices <- function(filePath,
 
 
 # load raster
-r = terra::rast(filePath)
+r = raster::stack(filePath)
 
 #calculate indices
 RGBIndices <- uavRst::rgb_indices(red = terra::subset(r, red), 
                                   green = terra::subset(r, green), 
                                   blue = terra::subset(r, blue))
-spectralIndices <- RStoolbox::spectralIndices(winterRLP, 
+spectralIndices <- RStoolbox::spectralIndices(img = r, 
                                               redEdge1, 
                                               redEdge2, 
                                               redEdge3,
                                               nir, 
+                                              swir1 = NULL,
                                               swir2, 
                                               swir3, 
                                               red,
@@ -44,7 +45,7 @@ spectralIndices <- RStoolbox::spectralIndices(winterRLP,
                                               blue)
 
 # stack all layers to one stack
-r <- terra::rast(list(RGBIndices, spectralIndices, r))
+r <- raster::stack(RGBIndices, spectralIndices, r)
 
 # rename
 names(r) = paste0(names(r), suffix)
@@ -52,7 +53,8 @@ names(r) = paste0(names(r), suffix)
 return(r)
 
 #safe
+if (!is.null(outPath)) {
 terra::writeRaster(r, outputPath, format="raster", overwrite = TRUE)
-
+}
 } # end of function
 

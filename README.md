@@ -11,7 +11,7 @@ Data Download:
 
 Paper manuscript:
 
-* [Go to Manuscript](https://hessenbox.uni-marburg.de/open/MlVIRlNXVWNtRjl2eUVRbjE1V0xH/Waldmodellierung/Paper_Draft.docx)
+* [Go to Manuscript](https://hessenbox.uni-marburg.de/open/MlVIRlNXVWNtRjl2eUVRbjE1V0xH/Waldmodellierung/020_Entwurf_Waldmodellierung.docx)
 
 Short report: 
 
