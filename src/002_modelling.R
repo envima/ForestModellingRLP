@@ -24,16 +24,16 @@ source(file.path(root_folder, "src/functions/000_setup.R"))
 # 1.1 - load sentinel data ####
 #-----------------------------#
 
-summer <- terra::rast("data/sentinel/summer/summer.tif")
-winter <- terra::rast("data/sentinel/winter/winter.tif")
-lidar <- terra::rast("data/lidar/LIDAR.tif")
+summer <- terra::rast("data/001_raw_data/sentinel/summer/summer.tif")
+winter <- terra::rast("data/001_raw_data/sentinel/winter/winter.tif")
+lidar <- terra::rast("data/001_raw_data/lidar/LIDAR.tif")
 # stack all
 RLP <- terra::rast(list(summer, winter, lidar))
 
 # 1.2 - load forest inventory data ####
 #-------------------------------------#
 
-pol = sf::read_sf("data/FID/Trainingsgebiete_RLP.gpkg")
+pol = sf::read_sf("data/001_raw_data/FID/Trainingsgebiete_RLP.gpkg")
 #pol = st_transform(rlp_forest, crs = 25832)
 
 
