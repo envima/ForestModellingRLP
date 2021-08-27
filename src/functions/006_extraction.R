@@ -25,15 +25,13 @@ result = lapply(seq(nrow(pol)), function(i){
    
   all = terra::crop(rasterStack, ext)
   
-  # check if all chm values are FALSE !!!!!!!!!!!
-  #if (raster::hasValues(all))
-  #has.data = which(!is.na(raster::getValues(max(all, na.rm=TRUE))))
-  ##if(all(is.na(values(all$)))){
-    #print("no values")
-    #return("no values")
-  #}
-  
-  #!!!!!!!!!!!!!!!!!!!!!
+   #check if all chm values are FALSE
+    if (raster::hasValues(all))
+  has.data = which(!is.na(raster::getValues(max(all, na.rm=TRUE))))
+  if(all(is.na(values(all$)))){
+  print("no values")
+    return("no values")
+  }
   
   
   df = terra::extract(all, vect(cur), df = TRUE)
@@ -47,7 +45,7 @@ result = lapply(seq(nrow(pol)), function(i){
 
 
 # backup save
-#saveRDS(result, "~/temp/RLP_extract_backup.RDS")
+saveRDS(result, "~/temp/RLP_extract_backup.RDS")
 
 
 
@@ -58,8 +56,6 @@ protocoll = lapply(result, function(r){
     return(as.character(nrow(r)))
   }else if(r == "Luxemburg"){
     return("UTM31")
-  }else if(r == "Smaller10"){
-    return("LowCanopyHeight")
   }else if(r == "Small"){
     return("SmallPolygon")
   }else{

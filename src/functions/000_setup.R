@@ -31,11 +31,39 @@ libs <- c("terra",
           "yaml"
 )
 
+# Set project specific subfolders
+projectDirList   = c("data/",
+                     "data/aoa/",
+                     "data/001_raw_data/FID/",
+                     "data/001_raw_data/hansen/",
+                     "data/001_raw_data/sentinel/",
+                     "data/001_raw_data/sentinel/winter/",
+                     "data/001_raw_data/sentinel/summer/",
+                     "data/001_raw_data/lidar/",
+                     "data/002_modeling/model_training_data/" ,
+                     "data/002_modeling/models/",
+                     "data/002_modeling/prediction/",
+                     "data/002_modeling/selected_variables/",
+                     "data/003_validation",
+                     "data/003_validation/confusionmatrix/",
+                     "data/003_validation/varImp/",
+                     "data/003_validation/figures/",
+                     "data/003_validation/figures/maps/",
+                     "data/003_validation/figures/illustrations/",
+                     "docs/",
+                     "mapping/",
+                     "notes/",
+                     "src/",
+                     "src/deprecated/",
+                     "src/functions")
+
 # Load libraries and create environment object to be used in other scripts for path navigation
 project_folders <- list.dirs(path = root_folder, full.names = FALSE, recursive = TRUE)
 project_folders <- project_folders[!grepl("\\..", project_folders)]
 envrmt <- createEnvi(
-  root_folder = root_folder, fcts_folder = file.path(root_folder, "src/functions/"),  folders = project_folders,
+  root_folder = root_folder, 
+  fcts_folder = file.path(root_folder, "src/functions/"),  
+  folders = projectDirList,
   libs = libs, create_folders = FALSE)
 meta <- createMeta(root_folder)
 
