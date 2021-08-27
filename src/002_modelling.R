@@ -1,4 +1,4 @@
-#' sub control script for data preparation
+#' sub control script for modelling
 #'
 #'
 #' @description Use this script for controlling the processing.
@@ -12,10 +12,11 @@ root_folder = find_rstudio_root_file()
 
 source(file.path(root_folder, "src/functions/000_setup.R"))
 
-
+# Content
 # 1. extraction
 # 2. balancing
-# 4. 
+# 3. modelling
+# 4. prediction & AOA
 
 
 # 1 - extraction ####
@@ -100,6 +101,11 @@ for (i in unique(data$BAGRu)) {
 # 3.1 - tree species ####
 #-----------------------#
 
+## choose model response
+response_type<-c ("main", "diverse")
+
+# load modelling data
+pred_resp<-readRDS(paste0("data/modelling/", response_type, ".RDS"))
 
 
 modelling(predResp = ,
@@ -116,3 +122,5 @@ modelling(predResp = ,
 #-------------------------#
 
 
+prediction_aoa(lstSpecies = c("main", "diverse"), 
+               lstQuality = "quality")
