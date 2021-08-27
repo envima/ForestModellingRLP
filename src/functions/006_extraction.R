@@ -54,7 +54,7 @@ extraction <- function(rasterStack, pol, bufferSize = -20, idColName = "FAT__ID"
   
   
   # backup save
-  saveRDS(result, "~/RLP_extract_backup.RDS")
+  saveRDS(result, file.path(paste0(tempdir(), "extract_backup.RDS")))
   
   
   
