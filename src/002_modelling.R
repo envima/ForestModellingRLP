@@ -13,8 +13,8 @@ root_folder = find_rstudio_root_file()
 source(file.path(root_folder, "src/functions/000_setup.R"))
 
 
-# 1. read stack & polygons
-# 2. predict 
+# 1. extraction
+# 2. balancing
 # 4. 
 
 
@@ -24,16 +24,16 @@ source(file.path(root_folder, "src/functions/000_setup.R"))
 # 1.1 - load sentinel data ####
 #-----------------------------#
 
-summer <- terra::rast("data/001_raw_data/sentinel/summer/summer.tif")
-winter <- terra::rast("data/001_raw_data/sentinel/winter/winter.tif")
-lidar <- terra::rast("data/001_raw_data/lidar/LIDAR.tif")
+summer <- terra::rast(file.path(envrmt$summer, "summer.tif"))
+winter <- terra::rast(file.path(envrmt$winter, "winter.tif"))
+lidar <- terra::rast(file.path(envrmt$lidar, "LIDAR.tif"))
 # stack all
 RLP <- terra::rast(list(summer, winter, lidar))
 
 # 1.2 - load forest inventory data ####
 #-------------------------------------#
 
-pol = sf::read_sf("data/001_raw_data/FID/Trainingsgebiete_RLP.gpkg")
+pol = sf::read_sf(file.path(envrmt$FID, "Trainingsgebiete_RLP.gpkg"))
 #pol = st_transform(rlp_forest, crs = 25832)
 
 
@@ -46,80 +46,45 @@ rlpExtr = extraction(rasterStack = RLP,
                      idColName = "FAT__ID")
 
 
-write.csv(p, "data/RLP_extration_protocoll.csv", quote = FALSE, row.names = FALSE)
+saveRDS(rlpExtr, file.path(envrmt$model_training_data, "RLP_extract.RDS"))
 
 
-# foramting of extraction
-
-res = result[sapply(result, is.data.frame)]
-res = do.call(rbind, res)
-saveRDS(res, "data/RLP_extract.RDS")
-
-
-
-
-
-#--------------------------
-# extraction of selected variables
-#
-#
-#
-#
-#
-#
-#
-#
-# input
-lstModels = list.files(envrmt$models, pattern=c(".RDS"), full.names = FALSE)
-predictors <- terra::rast(list(summerRLP, winterRLP, summerIndices, winterIndices))
-
-selected_variables()
-
-
-# 2 - balancing the data ####
-#---------------------------#
+# 2 - balancing ####
+#-----------------#
 
 # input
-extr = readRDS(file.path("data/model_training_data/RLP_extract.RDS"))
-polygons = st_read("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Exp_Shape_Wefl_UTM/Trainingsgebiete_RLP/Etb_Qua_Dim_Rei_WGS84.shp") %>% st_drop_geometry()
+extr = readRDS(file.path(envrmt$model_training_data, "RLP_extract.RDS"))
+polygons = st_read(file.path(envrmt$FID, "Trainingsgebiete_RLP.gpkg")) %>% st_drop_geometry()
 polygons = polygons[,c("FAT__ID", "Phase", "BAGRu")]
 extr = merge(extr, polygons, by = "FAT__ID")
 rm(polygons)
 
-data = extr
-rm(extr)
+# 2.1 balance main model ####
+#---------------------------#
 
-#####
-#
-#  Main Modell data balancing 
-#
-###########
-main = balancing(extr = data,
+main = balancing(extr = extr,
                     response = "BAGRu",
                     class = c("Fi", "Ei", "Ki", "Bu", "Dou"))
 
-saveRDS(file.path(main, envrmt$model_training_data, paste0("main", ".RDS")))
-##
-#
-# diverse model data balancing
-#
-##
-diverse = balancing(extr = data,
+saveRDS(main, file.path(envrmt$model_training_data, "main.RDS"))
+
+# 2.2 balance diverse model ####
+#------------------------------#
+
+diverse = balancing(extr = extr,
                     response = "BAGRu",
                     class = c("Fi", "Ei", "Ki", "Bu", "Dou", "Lbk", "Lbl", "Lä"))
 
-saveRDS(diverse, file.path(envrmt$model_training_data, paste0("diverse", ".RDS")))
-##
-#
-# successional stages balancing
-#
-#
-data = data %>% filter(Phase != "Etb")
+saveRDS(diverse, file.path(envrmt$model_training_data,"diverse.RDS"))
+
+# 2.3 balance successional stages ####
+#------------------------------------#
+
+data = extr %>% filter(Phase != "Etb")
 data$Quality = paste0(data$BAGRu, "_", data$Phase)
 
 
 for (i in unique(data$BAGRu)) {
-  i = unique(data$BAGRu)[1]
   df = data %>% filter(BAGRu == i)
   quality = balancing(extr = df,
                       response = "Quality",
@@ -129,12 +94,25 @@ for (i in unique(data$BAGRu)) {
 }
 
 
-# 2 - modelling
-#--------------
+# 3 - modelling ####
+#------------------#
+
+# 3.1 - tree species ####
+#-----------------------#
 
 
 
-#
+modelling(predResp = ,
+          responseColName = ,
+          responseType = ,
+          predictorsColNo = ,
+          spacevar = ,
+          ncores = 10)
 
+# 3.2 - successional stages ####
+#------------------------------#
+
+# 4 - prediction & AOA ####
+#-------------------------#
 
 
