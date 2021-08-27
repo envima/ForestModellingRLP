@@ -1,7 +1,7 @@
 #' @name 007_modelling.R
 #' @docType function
 #' @description 
-#' @param predResp
+#' @param predResp data frame from baalncing the data
 #' @param responseType
 #' @param responseColName
 #' @param predcitorsColNo
@@ -18,7 +18,7 @@ modelling <- function(predResp,
                       ncores = 10)
 {
 
-  predResp <- na.omit(pred_resp)
+  predResp <- na.omit(predResp)
   ### Initialise Leave-Location out cv
   ## Main difference in the modelling strategy: we combine multiple location in the folds
   # sample a ten fold cv stratified after the main tree species (BAGRu)

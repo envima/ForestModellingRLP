@@ -91,7 +91,7 @@ for (i in unique(data$BAGRu)) {
                       response = "Quality",
                       class = unique(df$Quality))
   
-  saveRDS(quality, file.path(envrmt$model_training_data, paste0(i, ".RDS")))
+  saveRDS(quality, file.path(envrmt$model_training_data, paste0("quality_", i, ".RDS")))
 }
 
 
@@ -102,18 +102,22 @@ for (i in unique(data$BAGRu)) {
 #-----------------------#
 
 ## choose model response
-response_type<-c ("main", "diverse")
+response_type = c("main", "diverse")
 
+for (i in response_type) {
 # load modelling data
-readRDS(paste0("data/modelling/", response_type, ".RDS"))
+predResp = readRDS(file.path(envrmt$model_training_data, paste0(i, ".RDS")))
 
 
-modelling(predResp = ,
-          responseColName = ,
-          responseType = ,
-          predictorsColNo = ,
-          spacevar = ,
+mod = modelling(predResp,
+          responseColName = "BAGRu",
+          responseType = i,
+          predictorsColNo = 2:131,
+          spacevar = "FAT__ID",
           ncores = 10)
+
+saveRDS(mod, file.path(envrmt$models, paste0(i, "_ffs.RDS")))
+} # end for loop
 
 # 3.2 - successional stages ####
 #------------------------------#
