@@ -105,7 +105,7 @@ for (i in unique(data$BAGRu)) {
 response_type<-c ("main", "diverse")
 
 # load modelling data
-pred_resp<-readRDS(paste0("data/modelling/", response_type, ".RDS"))
+readRDS(paste0("data/modelling/", response_type, ".RDS"))
 
 
 modelling(predResp = ,
