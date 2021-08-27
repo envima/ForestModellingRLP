@@ -5,65 +5,83 @@
 #' @param rasterStack terra rast object
 #' @param bufferSize default = -20
 #' @param idColName string default = "ID"
+#' @param extrProtocollOut = data/RLP_extration_protocoll.csv" output path and filename as string in .csv
 #' @return 
 #' 
 
 
-extraction <- function(rasterStack, pol, bufferSize = -20, idColName = "FAT__ID") {
+extraction <- function(rasterStack, pol, bufferSize = -20, idColName = "FAT__ID", extrProtocollOut) {
   
-if (bufferSize != 0) {
-  pol = st_buffer(pol, dist = bufferSize)
-  pol = pol[!st_is_empty(pol),]
-}
-
-
-# extract all polygons from raster stack
-result = lapply(seq(nrow(pol)), function(i){
-  cur = pol[i,]
-  ext <- terra::ext(cur)
-  
-   
-  all = terra::crop(rasterStack, ext)
-  
-   #check if all chm values are FALSE
-    if (raster::hasValues(all))
-  has.data = which(!is.na(raster::getValues(max(all, na.rm=TRUE))))
-  if(all(is.na(values(all$)))){
-  print("no values")
-    return("no values")
+  if (bufferSize != 0) {
+    pol = st_buffer(pol, dist = bufferSize)
+    pol = pol[!st_is_empty(pol),]
   }
   
   
-  df = terra::extract(all, vect(cur), df = TRUE)
-  df = df %>% dplyr::mutate(cur %>% select(idColName))
-  df$ID <- NULL
+  # extract all polygons from raster stack
+  result = lapply(seq(nrow(pol)), function(i){
+    cur = pol[i,]
+    ext <- terra::ext(cur)
+    
+    
+    all = terra::crop(rasterStack, ext)
+    
+    
+    chm = all$chm_height_max
+    chm = terra::extract(chm, vect(cur), df = TRUE)
+    
+    # check if polygon only contains one row
+    if(nrow(chm) < 6){
+      print("Small Polygon")
+      return("Small")
+      
+    }
+    
+    # check if all chm values are FALSE
+    if(all(is.na(chm$chm_height_max))){
+      print("Luxemburg")
+      return("Luxemburg")
+    } else {
+      
+      df = terra::extract(all, vect(cur), df = TRUE)
+      df = df %>% dplyr::mutate(cur %>% select((!!sym(idColName))))
+      df$ID <- NULL
+      
+      print(paste("Extracted Polygon", i, "of", nrow(pol)))
+      return(df)
+    }
+  }) # end lapply
   
-  print(paste("Extracted Polygon", i, "of", nrow(pol)))
-  return(df)
-
-}) # end lapply
-
-
-# backup save
-saveRDS(result, "~/temp/RLP_extract_backup.RDS")
-
-
-
-# processing protocoll
-protocoll = lapply(result, function(r){
   
-  if(is.data.frame(r)){
-    return(as.character(nrow(r)))
-  }else if(r == "Luxemburg"){
-    return("UTM31")
-  }else if(r == "Small"){
-    return("SmallPolygon")
-  }else{
-    return("Error")
-  }
+  # backup save
+  saveRDS(result, "~/temp/RLP_extract_backup.RDS")
   
-})
-
+  
+  
+  # processing protocoll
+  protocoll = lapply(result, function(r){
+    
+    if(is.data.frame(r)){
+      return(as.character(nrow(r)))
+    }else if(r == "Luxemburg"){
+      return("UTM31")
+    }else if(r == "Small"){
+      return("SmallPolygon")
+    }else{
+      return("Error")
+    }
+    
+  })
+  p = data.frame(FAT__ID = pull(pol, (!!sym(idColName))), 
+                 status = do.call(c, protocoll))
+  write.csv(p, extrProtocollOut, quote = FALSE, row.names = FALSE)
+  
+  
+  # foramting of extraction
+  
+  res = result[sapply(result, is.data.frame)]
+  res = do.call(rbind, res)
+  return(res)
 } # end of function
 
 
