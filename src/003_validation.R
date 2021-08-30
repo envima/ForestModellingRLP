@@ -16,44 +16,48 @@ source(file.path(root_folder, "src/functions/000_setup.R"))
 # 1 - validation ####
 #-------------------#
 
-polygons = sf::read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Exp_Shape_Wefl_UTM/Trainingsgebiete_RLP/Etb_Qua_Dim_Rei_WGS84.shp") %>% st_drop_geometry()
+polygons = sf::read_sf(file.path(envrmt$FID, "Trainingsgebiete_RLP.gpkg")) %>% st_drop_geometry()
 # relevant class information from original polygons
 polygons = polygons[,c("FAT__ID", "Phase", "BAGRu")]
-rlp_extract = readRDS("C:/Users/Lisa Bald/Uni_Marburg/forest_modelling_rlp/ForestModellingRLP/data/model_training_data/RLP_extract.RDS")
 # attach relevant class information to full extraction set
+extract = readRDS(file.path(envrmt$model_training_data, "extract.RDS"))
+
 # format properly
-rlp_extract = merge(rlp_extract, polygons, by = "FAT__ID")
+extract = merge(extract, polygons, by = "FAT__ID")
 rm(polygons)
-rlp_extract$surface_intensity_mean = NULL
-rlp_extract$ID = NULL
+extract$surface_intensity_mean = NULL
+extract$ID = NULL
 
-rlp_extract$Quality = paste0(rlp_extract$BAGRu, "_", rlp_extract$Phase)
+extract$Quality = paste0(extract$BAGRu, "_", extract$Phase)
 
-
-
-models = c("main", "diverse")
-idCol = "FAT__ID"
-responseCol = "BAGRu"
-
+for (i in c("main", "diverse", "Bu", "Fi", "Ei", "Dou", "Lä", "Ki", "Lbk", "Lbl")) {
+  validation(extr = extract,
+             model = "main", 
+             idCol = "FAT__ID", 
+             responseCol = "BAGRu") 
+  
+} # end for loop
 
 
 # 2 - confusion matrices ####
 #---------------------------#
-df =readRDS("D:/forest_modelling/ForestModellingRLP/data/validation/meta_classes_diverse_confusionmatrix.RDS")
-diverse= confusionMatrix_ggplot(caretConfMatr = df)
-diverse
 
+models = c("main", "diverse")
 
-
-df =readRDS("D:/forest_modelling/ForestModellingRLP/data/validation/meta_classes_main_trees_confusionmatrix.RDS")
-main= confusionMatrix_ggplot(caretConfMatr = df)
-main
-
+for (m in models) {
+  df = readRDS(file.path(envrmt$confusionmatrix, paste0(m, "_confusionmatrix.RDS")))
+  cm = confusionMatrix_ggplot(caretConfMatr = df)
+  ggsave(plot = cm, path = file.path(envrmt$illustrations), 
+         filename = paste0(m, "_confusionmatrix.png"),
+         width = 10,
+         height = 7,
+         dpi = 400)
+}
 
 # 3 - successional stages confusion matrices ####
 #-----------------------------------------------#
 
-lstFiles = list.files("D:/forest_modelling/ForestModellingRLP/data/validation/", full.names = TRUE, pattern = glob2rx("quality*confusionmatrix.RDS"))
+lstFiles = list.files("E:/Waldmodellierung/ForestModellingRLP/data/validation/", full.names = TRUE, pattern = glob2rx("quality*confusionmatrix.RDS"))
 cm <- readRDS(lstFiles[[1]])
 cm <- as.data.frame(cm$table)
 
@@ -75,6 +79,18 @@ plot_Ki = successional_stages_cm(cm)
 # 3 - table metadata ####
 #-----------------------#
 
-lstYaml = list.files("D:/forest_modelling/ForestModellingRLP/data/validation/", pattern = ".yaml", full.names = TRUE)
-
+lstYaml = list.files("E:/Waldmodellierung/ForestModellingRLP/data/validation/", pattern = ".yaml", full.names = TRUE)
 meta_table = table_metadata(lstYaml)
+gtsave(meta_table,
+       filename = "no_training_pixel_table.png",
+       path = file.path(envrmt$illustrations))
+
+# 4 - table selected variables ####
+#---------------------------------#
+
+
+
+# 5 - selected variables plots ####
+#---------------------------------#
+
+

@@ -64,8 +64,8 @@ rm(polygons)
 #---------------------------#
 
 main = balancing(extr = extr,
-                    response = "BAGRu",
-                    class = c("Fi", "Ei", "Ki", "Bu", "Dou"))
+                 response = "BAGRu",
+                 class = c("Fi", "Ei", "Ki", "Bu", "Dou"))
 
 saveRDS(main, file.path(envrmt$model_training_data, "main.RDS"))
 
@@ -105,18 +105,18 @@ for (i in unique(data$BAGRu)) {
 response_type = c("main", "diverse")
 
 for (i in response_type) {
-# load modelling data
-predResp = readRDS(file.path(envrmt$model_training_data, paste0(i, ".RDS")))
-
-
-mod = modelling(predResp,
-          responseColName = "BAGRu",
-          responseType = i,
-          predictorsColNo = 2:131,
-          spacevar = "FAT__ID",
-          ncores = 10)
-
-saveRDS(mod, file.path(envrmt$models, paste0(i, "_ffs.RDS")))
+  # load modelling data
+  predResp = readRDS(file.path(envrmt$model_training_data, paste0(i, ".RDS")))
+  
+  
+  mod = modelling(predResp,
+                  responseColName = "BAGRu",
+                  responseType = i,
+                  predictorsColNo = 2:131,
+                  spacevar = "FAT__ID",
+                  ncores = 10)
+  
+  saveRDS(mod, file.path(envrmt$models, paste0(i, "_ffs.RDS")))
 } # end for loop
 
 # 3.2 - successional stages ####

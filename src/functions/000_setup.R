@@ -28,7 +28,8 @@ libs <- c("terra",
           "ggnewscale",
           "RColorBrewer",
           "gt",
-          "yaml"
+          "yaml",
+          "webshot"
 )
 
 # Set project specific subfolders

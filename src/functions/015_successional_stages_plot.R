@@ -6,7 +6,6 @@
 
 
 
-
 successional_stages_cm <- function(cm) {
   
   p = ggplot(cm, aes(fill=Predicted, y=Freq, x=Observed)) + 
