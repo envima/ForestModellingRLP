@@ -47,14 +47,14 @@ rlpExtr = extraction(rasterStack = RLP,
                      idColName = "FAT__ID")
 
 
-saveRDS(rlpExtr, file.path(envrmt$model_training_data, "RLP_extract.RDS"))
+saveRDS(rlpExtr, file.path(envrmt$model_training_data, "extract.RDS"))
 
 
 # 2 - balancing ####
 #-----------------#
 
 # input
-extr = readRDS(file.path(envrmt$model_training_data, "RLP_extract.RDS"))
+extr = readRDS(file.path(envrmt$model_training_data, "extract.RDS"))
 polygons = st_read(file.path(envrmt$FID, "Trainingsgebiete_RLP.gpkg")) %>% st_drop_geometry()
 polygons = polygons[,c("FAT__ID", "Phase", "BAGRu")]
 extr = merge(extr, polygons, by = "FAT__ID")
