@@ -122,9 +122,30 @@ saveRDS(mod, file.path(envrmt$models, paste0(i, "_ffs.RDS")))
 # 3.2 - successional stages ####
 #------------------------------#
 
+
+lstQuality = list.files(file.path(envrmt$model_training_data), pattern = "quality")
+
+for (i in lstQuality) {
+  # load modelling data
+  predResp = readRDS(file.path(envrmt$model_training_data, i))
+  responseType = gsub("quality_", "", i)
+  responseType = gsub(".RDS", "", responseType)
+  
+  mod = modelling(predResp,
+                  responseColName = "BAGRu",
+                  responseType = responseType,
+                  predictorsColNo = 2:131,
+                  spacevar = "FAT__ID",
+                  ncores = 10)
+  
+  saveRDS(mod, file.path(envrmt$models, paste0("quality_", responseType, "_ffs.RDS")))
+} # end for loop
+
 # 4 - prediction & AOA ####
 #-------------------------#
 
 
 prediction_aoa(lstSpecies = c("main", "diverse"), 
                lstQuality = "quality")
+
+
