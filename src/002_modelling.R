@@ -30,7 +30,7 @@ winter <- terra::rast(file.path(envrmt$winter, "winter.tif"))
 lidar <- terra::rast(file.path(envrmt$lidar, "LIDAR.tif"))
 # stack all
 RLP <- terra::rast(list(summer, winter, lidar))
-
+rm(summer,winter, lidar)
 # 1.2 - load forest inventory data ####
 #-------------------------------------#
 

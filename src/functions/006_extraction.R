@@ -5,7 +5,6 @@
 #' @param rasterStack terra rast object
 #' @param bufferSize default = -20
 #' @param idColName string default = "ID"
-#' @param extrProtocollOut = data/RLP_extration_protocoll.csv" output path and filename as string in .csv
 #' @return 
 #' 
 
@@ -24,10 +23,7 @@ extraction <- function(rasterStack, pol, bufferSize = -20, idColName = "FAT__ID"
     ext <- terra::ext(cur)
     
     
-    all = terra::crop(rasterStack, ext)
-    
-    
-    chm = all$chm_height_max
+    chm = rasterStack$chm_height_max
     chm = terra::extract(chm, vect(cur), df = TRUE)
     
     # check if polygon only contains one row
@@ -42,6 +38,8 @@ extraction <- function(rasterStack, pol, bufferSize = -20, idColName = "FAT__ID"
       print("Luxemburg")
       return("Luxemburg")
     } else {
+      
+      all = terra::crop(rasterStack, ext)
       
       df = terra::extract(all, vect(cur), df = TRUE)
       df = df %>% dplyr::mutate(cur %>% select((!!sym(idColName))))
@@ -74,7 +72,7 @@ extraction <- function(rasterStack, pol, bufferSize = -20, idColName = "FAT__ID"
   })
   p = data.frame(FAT__ID = pull(pol, (!!sym(idColName))), 
                  status = do.call(c, protocoll))
-  write.csv(p, extrProtocollOut, quote = FALSE, row.names = FALSE)
+  write.csv(p, file.path(envrmt$model_training_data, "extraction_protocoll.csv"), quote = FALSE, row.names = FALSE)
   
   
   # foramting of extraction
