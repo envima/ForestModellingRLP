@@ -19,17 +19,14 @@ extraction <- function(rasterStack, pol, bufferSize = -20, idColName = "FAT__ID"
   # extract all polygons from raster stack
   result = lapply(seq(nrow(pol)), function(i){
     cur = pol[i,]
-    ext <- terra::ext(cur)
+    ext <- raster::extent(cur)
     
 
     LIDARIndices <- rasterdb$raster(ext)
-    LIDARIndices = dropLayer(LIDARIndices, "band1") 
+    LIDARIndices = raster::dropLayer(LIDARIndices, "band1") 
     #all = terra::crop(rasterStack, ext)
     chm = LIDARIndices$chm_height_max
-
-    
-    chm = rasterStack$chm_height_max
-    chm = terra::extract(chm, vect(cur), df = TRUE)
+    chm = terra::extract(rast(chm), vect(cur), df = TRUE)
     
     # check if polygon only contains one row
     if(nrow(chm) < 6){
@@ -46,7 +43,7 @@ extraction <- function(rasterStack, pol, bufferSize = -20, idColName = "FAT__ID"
       
 
       sen = terra::crop(rasterStack, ext)
-      all = rast(list(LIDARIndices, sen))
+      all = rast(list(rast(LIDARIndices), sen))
 
       all = terra::crop(rasterStack, ext)
 
