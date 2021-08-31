@@ -40,6 +40,15 @@ pol = sf::read_sf(file.path(envrmt$FID, "Trainingsgebiete_RLP.gpkg"))
 
 # 1.3 - extract ####
 #------------------#
+# Access RSDB
+#userpwd <- "user:password" # use this account (if not loaded from file)
+fileName <- file.path(envrmt$lidar, "remote_sensing_userpwd.txt") # optional file in home directory content: user:password
+userpwd <- readChar(fileName, file.info(fileName)$size) # optional read account from file
+# open remote sensing database
+remotesensing <- RemoteSensing$new("http://192.168.191.183:8081", userpwd) # remote server
+# get one rasterdb
+rasterdb <- remotesensing$rasterdb("RLP_forest_mask_20m_i4")
+
 
 rlpExtr = extraction(rasterStack = RLP, 
                      pol = pol, 
