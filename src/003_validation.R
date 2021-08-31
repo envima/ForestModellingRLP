@@ -58,23 +58,56 @@ for (m in models) {
 #-----------------------------------------------#
 
 lstFiles = list.files("E:/Waldmodellierung/ForestModellingRLP/data/validation/", full.names = TRUE, pattern = glob2rx("quality*confusionmatrix.RDS"))
-cm <- readRDS(lstFiles[[1]])
-cm <- as.data.frame(cm$table)
+lstFiles = list.files(file.path(envrmt$confusionmatrix),  pattern = glob2rx("quality*confusionmatrix.RDS"))
 
-levels(cm$Observed)
-cm$Observed <- factor(cm$Observed,levels = c("Bu_Qua", "Bu_Dim", "Bu_Rei"))
-cm$Predicted <- factor(cm$Predicted,levels = c(  "Bu_Rei",  "Bu_Dim","Bu_Qua"))
+for (i in 1:length(lstFiles)) {
+  
+  cm <- readRDS(file.path(envrmt$confusionmatrix,lstFiles[[i]]))
+  cm <- as.data.frame(cm$table)
+  
+  if (nlevels(cm$Observed) == 3) {
+    cm$Observed <- as.character(cm$Observed)
+    cm[grepl("Qua", cm$Observed), "Observed"] <- "Q"
+    cm[grepl("Dim", cm$Observed), "Observed"] <- "D"
+    cm[grepl("Rei", cm$Observed), "Observed"] <- "M"
+    
+    cm$Predicted <- as.character(cm$Predicted)
+    cm[grepl("Qua", cm$Predicted), "Predicted"] <- "Q"
+    cm[grepl("Dim", cm$Predicted), "Predicted"] <- "D"
+    cm[grepl("Rei", cm$Predicted), "Predicted"] <- "M"
+  } else {
+    cm$Observed <- as.character(cm$Observed)
+    cm[grepl("Dim", cm$Observed), "Observed"] <- "D"
+    cm[grepl("Rei", cm$Observed), "Observed"] <- "M"
+    
+    cm$Predicted <- as.character(cm$Predicted)
+    cm[grepl("Dim", cm$Predicted), "Predicted"] <- "D"
+    cm[grepl("Rei", cm$Predicted), "Predicted"] <- "M"
+  }
+
+cm$Observed <- as.factor(cm$Observed)
+cm$Predicted <- as.factor(cm$Predicted)
+
+if (nlevels(cm$Observed) == 3) {
+  cm$Observed <- factor(cm$Observed,levels = c("Q", "D", "M"))
+  cm$Predicted <- factor(cm$Predicted,levels = c("M",  "D","Q"))
+} else {
+  cm$Observed <- factor(cm$Observed,levels = c("D", "R"))
+  cm$Predicted <- factor(cm$Predicted,levels = c(  "R",  "D"))
+}
+
+# Name of plot
+modelName = gsub("quality_", "", lstFiles[[i]])
+modelName=  gsub("_confusionmatrix.RDS", "", modelName)
 
 
-plot_Buche = successional_stages_cm(cm)
-
-cm <- readRDS("D:/forest_modelling/ForestModellingRLP/data/validation/quality_pine_confusionmatrix.RDS")
-cm <- as.data.frame(cm$table)
-
-cm$Observed <- factor(cm$Observed,levels = c("Ki_Dim", "Ki_Rei"))
-cm$Predicted <- factor(cm$Predicted,levels = c( "Ki_Rei",  "Ki_Dim"))
-
-plot_Ki = successional_stages_cm(cm)
+plot_succession = successional_stages_cm(cm)
+ggsave(plot = plot_succession, path = file.path(envrmt$illustrations), 
+       filename = paste0(modelName, "_confusionmatrix.png"),
+       width = 10,
+       height = 7,
+       dpi = 400)
+} # end for loop
 
 # 3 - table metadata ####
 #-----------------------#
