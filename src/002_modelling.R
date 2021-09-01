@@ -111,7 +111,6 @@ ddply(diverse,~BAGRu,summarise,number_of_distinct_locations=n_distinct(FAT__ID))
 #------------------------------------#
 
 data = extract %>% filter(Phase != "Etb")
-data$Quality = paste0(data$BAGRu, "_", data$Phase)
 
 
 for (i in unique(data$BAGRu)) {
@@ -120,6 +119,9 @@ for (i in unique(data$BAGRu)) {
                       response = "Quality",
                       class = unique(df$Quality),
                       idCol = "FAT__ID")
+  
+  as.data.frame(table(factor(quality$FAT__ID)))
+  ddply(quality,~BAGRu,summarise,number_of_distinct_locations=n_distinct(FAT__ID))
   
   saveRDS(quality, file.path(envrmt$model_training_data, paste0("quality_", i, ".RDS")))
 }

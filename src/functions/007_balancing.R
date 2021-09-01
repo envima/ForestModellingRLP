@@ -16,7 +16,7 @@ balancing <- function(pred_resp, idCol = "FAT__ID", response = "BAGRu", class = 
   
   
   #number of locations per class before subsetting
-  dens_plots2 = pred_resp %>%
+  dens_plots = pred_resp %>%
     group_by((!!sym(response))) %>%
     dplyr::summarize(number_of_distinct_locations = n_distinct((!!sym(idCol))))
   
@@ -56,8 +56,7 @@ balancing <- function(pred_resp, idCol = "FAT__ID", response = "BAGRu", class = 
   # determine smallest class
   balancer = balance_df %>% filter(sampels == min(balance_df$sampels))
 
- 
-  balancer_df<-balance_df[balance_df$BAGRu == balancer[[1]],]
+  balancer_df = balance_df%>% filter((!!sym(response)) == balancer[[1]])
   print(paste0("The poorest represented class is: ", balancer[[1]], ". It is used as balancer."))
   max_balancer<-balancer_df[balancer_df$sampels==max(balancer_df$sampels),]
   
