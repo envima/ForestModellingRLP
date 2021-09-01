@@ -82,16 +82,25 @@ extract$Quality = paste0(extract$BAGRu, "_", extract$Phase)
 
 main = balancing(pred_resp = extract,
                  response = "BAGRu",
-                 class = c("Fi", "Ei", "Ki", "Bu", "Dou"))
+                 class = c("Fi", "Ei", "Ki", "Bu", "Dou"),
+                 idCol = "FAT__ID")
 
+##control
+head(main)
+as.data.frame(table(factor(main$FAT__ID)))
+ddply(main,~BAGRu,summarise,number_of_distinct_locations=n_distinct(FAT__ID))
+
+
+##save
 saveRDS(main, file.path(envrmt$model_training_data, "main.RDS"))
 
 # 2.2 balance diverse model ####
 #------------------------------#
 
-diverse = balancing(extr = extr,
+diverse = balancing(pred_resp = extract,
                     response = "BAGRu",
-                    class = c("Fi", "Ei", "Ki", "Bu", "Dou", "Lbk", "Lbl", "Lä"))
+                    class = c("Fi", "Ei", "Ki", "Bu", "Dou", "Lbk", "Lbl", "Lä"),
+                    idCol = "FAT__ID")
 
 saveRDS(diverse, file.path(envrmt$model_training_data,"diverse.RDS"))
 
@@ -106,7 +115,8 @@ for (i in unique(data$BAGRu)) {
   df = data %>% filter(BAGRu == i)
   quality = balancing(extr = df,
                       response = "Quality",
-                      class = unique(df$Quality))
+                      class = unique(df$Quality),
+                      idCol = "FAT__ID")
   
   saveRDS(quality, file.path(envrmt$model_training_data, paste0("quality_", i, ".RDS")))
 }
