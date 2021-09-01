@@ -146,7 +146,10 @@ for (i in response_type) {
                   responseType = i,
                   predictorsColNo = 2:131,
                   spacevar = "FAT__ID",
-                  ncores = 10)
+                  ncores = 10,
+                  bot = Bot(token = readLines(file.path(envrmt$models, "telegram_bot_token.txt"))),
+                  alert_chats = c("1083414512")
+  )
   
   saveRDS(mod, file.path(envrmt$models, paste0(i, "_ffs.RDS")))
 } # end for loop
@@ -168,7 +171,10 @@ for (i in lstQuality) {
                   responseType = responseType,
                   predictorsColNo = 2:131,
                   spacevar = "FAT__ID",
-                  ncores = 10)
+                  ncores = 10,
+                  bot = Bot(token = readLines(file.path(envrmt$models, "telegram_bot_token.txt"))),
+                  alert_chats = c("1083414512")
+                  )
   
   saveRDS(mod, file.path(envrmt$models, paste0("quality_", responseType, "_ffs.RDS")))
 } # end for loop
