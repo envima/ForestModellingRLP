@@ -75,8 +75,6 @@ extract$ID = NULL
 extract$Quality = paste0(extract$BAGRu, "_", extract$Phase)
 
 
-
-
 # 2.1 balance main model ####
 #---------------------------#
 
@@ -104,16 +102,21 @@ diverse = balancing(pred_resp = extract,
 
 saveRDS(diverse, file.path(envrmt$model_training_data,"diverse.RDS"))
 
+##control
+head(diverse)
+as.data.frame(table(factor(diverse$FAT__ID)))
+ddply(diverse,~BAGRu,summarise,number_of_distinct_locations=n_distinct(FAT__ID))
+
 # 2.3 balance successional stages ####
 #------------------------------------#
 
-data = extr %>% filter(Phase != "Etb")
+data = extract %>% filter(Phase != "Etb")
 data$Quality = paste0(data$BAGRu, "_", data$Phase)
 
 
 for (i in unique(data$BAGRu)) {
   df = data %>% filter(BAGRu == i)
-  quality = balancing(extr = df,
+  quality = balancing(pred_resp = df,
                       response = "Quality",
                       class = unique(df$Quality),
                       idCol = "FAT__ID")

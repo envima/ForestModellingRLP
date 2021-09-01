@@ -55,10 +55,15 @@ balancing <- function(pred_resp, idCol = "FAT__ID", response = "BAGRu", class = 
   
   # determine smallest class
   balancer = balance_df %>% filter(sampels == min(balance_df$sampels))
-  balancer_df<-balance_df[balance_df$BAGRu==balancer[[1]],]
+
+ 
+  balancer_df<-balance_df[balance_df$BAGRu == balancer[[1]],]
   print(paste0("The poorest represented class is: ", balancer[[1]], ". It is used as balancer."))
   max_balancer<-balancer_df[balancer_df$sampels==max(balancer_df$sampels),]
   
+  if (nrow(max_balancer)>1) {
+    max_balancer <- max_balancer%>%filter(max_balancer$number_of_distinct_locations == max(max_balancer$number_of_distinct_locations))
+  }
   
   balance_all<-balance_df[balance_df$min_samples== max_balancer[[4]],]
   
