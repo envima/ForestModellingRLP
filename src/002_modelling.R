@@ -60,18 +60,27 @@ saveRDS(rlpExtr, file.path(envrmt$model_training_data, "extract.RDS"))
 
 # 2 - balancing ####
 #-----------------#
-
-# input
-extr = readRDS(file.path(envrmt$model_training_data, "extract.RDS"))
-polygons = st_read(file.path(envrmt$FID, "Trainingsgebiete_RLP.gpkg")) %>% st_drop_geometry()
+polygons = sf::read_sf(file.path(envrmt$FID, "Trainingsgebiete_RLP.gpkg")) %>% st_drop_geometry()
+# relevant class information from original polygons
 polygons = polygons[,c("FAT__ID", "Phase", "BAGRu")]
-extr = merge(extr, polygons, by = "FAT__ID")
+# attach relevant class information to full extraction set
+extract = readRDS(file.path(envrmt$model_training_data, "extract.RDS"))
+
+# format properly
+extract = merge(extract, polygons, by = "FAT__ID")
 rm(polygons)
+extract$surface_intensity_mean = NULL
+extract$ID = NULL
+
+extract$Quality = paste0(extract$BAGRu, "_", extract$Phase)
+
+
+
 
 # 2.1 balance main model ####
 #---------------------------#
 
-main = balancing(extr = extr,
+main = balancing(pred_resp = extract,
                  response = "BAGRu",
                  class = c("Fi", "Ei", "Ki", "Bu", "Dou"))
 
