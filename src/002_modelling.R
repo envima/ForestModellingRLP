@@ -119,7 +119,7 @@ for (i in unique(data$BAGRu)) {
                       response = "Quality",
                       class = unique(df$Quality),
                       idCol = "FAT__ID")
-  
+  # control
   as.data.frame(table(factor(quality$FAT__ID)))
   ddply(quality,~BAGRu,summarise,number_of_distinct_locations=n_distinct(FAT__ID))
   
