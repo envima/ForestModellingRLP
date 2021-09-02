@@ -1,4 +1,14 @@
-setwd("C:/Users/Lisa Bald/Uni_Marburg/forest_modelling_rlp/ForestModellingRLP/data/models/")
+#' @name 016_selected_variables_table.R
+#' @docType function
+#' @description 
+#' @param 
+#' @param 
+#' @return 
+
+
+
+
+setwd("E:/Waldmodellierung/ForestModellingRLP/")
 
 lstModels = list.files(pattern = ".RDS")
 varNames = read.csv("../../data/variables_full_names.csv", sep = ";")
