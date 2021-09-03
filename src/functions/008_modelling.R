@@ -88,7 +88,9 @@ modelling <- function(predResp,
   for(i in 1:length(alert_chats)){bot$send_message(chat_id = alert_chats[i],
                                                    text = paste0("Finished calculations for response type ",response_type,
                                                                  ". On computer ", a[names(a)=="nodename"], 
-                                                                 ", Initiated by user ", a[names(a)=="user"]
+                                                                 ", Initiated by user ", a[names(a)=="user"], 
+                                                                 " The accuracy of the model is: ", 
+                                                                 round(mod$results$Accuracy, 4)*100
                                                    )
   )
   }
