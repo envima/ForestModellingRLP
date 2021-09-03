@@ -92,6 +92,10 @@ ddply(main,~BAGRu,summarise,number_of_distinct_locations=n_distinct(FAT__ID))
 ##save
 saveRDS(main, file.path(envrmt$model_training_data, "main.RDS"))
 
+bot = Bot(token = readLines(file.path(envrmt$models, "telegram_bot_token.txt")))
+alert_chats = c("1083414512")
+bot$send_message(chat_id = alert_chats ,text = paste0("Finished balancing main model"))
+
 # 2.2 balance diverse model ####
 #------------------------------#
 
@@ -144,7 +148,7 @@ for (i in response_type) {
   mod = modelling(predResp,
                   responseColName = "BAGRu",
                   responseType = i,
-                  predictorsColNo = 2:131,
+                  predictorsColNo = 2:114,
                   spacevar = "FAT__ID",
                   ncores = 10,
                   bot = Bot(token = readLines(file.path(envrmt$models, "telegram_bot_token.txt"))),
