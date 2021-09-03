@@ -90,7 +90,7 @@ modelling <- function(predResp,
                                                                  ". On computer ", a[names(a)=="nodename"], 
                                                                  ", Initiated by user ", a[names(a)=="user"], 
                                                                  " The accuracy of the model is: ", 
-                                                                 round(mod$results$Accuracy, 4)*100
+                                                                 round(ffsmodel$results$Accuracy, 4)*100
                                                    )
   )
   }
