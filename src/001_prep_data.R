@@ -70,7 +70,7 @@ forestMask = prep_hansen(treeCover = rast(hansen[[1]]),
                          gain = rast(hansen [[3]]),
                          changeCRS = "epsg:25832")
 # same resolution as Sentinel:
-forestMask = terra::resample(forestMask, terra::rast(file.path(envrmt$summer, "sentinel_summer.grd")))
+forestMask = terra::resample(forestMask, terra::rast(file.path(envrmt$summer, "sentinel_summer.tif")))
 # safe raster
 terra::writeRaster(forestMask, file.path(envrmt$hansen, "forestMask.tif"), overwrite = TRUE)
 rm(lstHansen, hansen, forestMask)
