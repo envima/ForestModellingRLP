@@ -57,6 +57,11 @@ rlpExtr = extraction(rasterStack = RLP,
 
 saveRDS(rlpExtr, file.path(envrmt$model_training_data, "extract.RDS"))
 
+bot = Bot(token = readLines(file.path(envrmt$models, "telegram_bot_token.txt")))
+alert_chats = c("1083414512")
+bot$send_message(chat_id = alert_chats ,text = paste0("I finished extraction of all training data. The extracted layers are: ",
+                                                      colnames(extract)))
+
 
 # 2 - balancing ####
 #-----------------#
@@ -91,9 +96,6 @@ ddply(main,~BAGRu,summarise,number_of_distinct_locations=n_distinct(FAT__ID))
 
 ##save
 saveRDS(main, file.path(envrmt$model_training_data, "main.RDS"))
-
-bot = Bot(token = readLines(file.path(envrmt$models, "telegram_bot_token.txt")))
-alert_chats = c("1083414512")
 bot$send_message(chat_id = alert_chats ,text = paste0("Finished balancing main model"))
 
 # 2.2 balance diverse model ####
@@ -105,6 +107,7 @@ diverse = balancing(pred_resp = extract,
                     idCol = "FAT__ID")
 
 saveRDS(diverse, file.path(envrmt$model_training_data,"diverse.RDS"))
+bot$send_message(chat_id = alert_chats ,text = paste0("Finished balancing diverse model"))
 
 ##control
 head(diverse)
@@ -138,9 +141,9 @@ for (i in unique(data$BAGRu)) {
 #-----------------------#
 
 ## choose model response
-response_type = c("main", "diverse")
+treeSpecies = c("main", "diverse")
 
-for (i in response_type) {
+for (i in treeSpecies) {
   # load modelling data
   predResp = readRDS(file.path(envrmt$model_training_data, paste0(i, ".RDS")))
   
@@ -148,9 +151,8 @@ for (i in response_type) {
   mod = modelling(predResp,
                   responseColName = "BAGRu",
                   responseType = i,
-                  predictorsColNo = 2:114,
+                  predictorsColNo = 2:145,
                   spacevar = "FAT__ID",
-                  ncores = 10,
                   bot = Bot(token = readLines(file.path(envrmt$models, "telegram_bot_token.txt"))),
                   alert_chats = c("1083414512")
   )
@@ -173,7 +175,7 @@ for (i in lstQuality) {
   mod = modelling(predResp,
                   responseColName = "BAGRu",
                   responseType = responseType,
-                  predictorsColNo = 2:131,
+                  predictorsColNo = 2:113,
                   spacevar = "FAT__ID",
                   ncores = 10,
                   bot = Bot(token = readLines(file.path(envrmt$models, "telegram_bot_token.txt"))),

@@ -1,12 +1,12 @@
 #' @name 007_modelling.R
 #' @docType function
 #' @description 
-#' @param predResp data frame from baalncing the data
+#' @param predResp data frame from balancing the data
 #' @param responseType
 #' @param responseColName
 #' @param predcitorsColNo
 #' @param spacevar
-#' @param ncores
+
 
 
 
@@ -15,16 +15,15 @@ modelling <- function(predResp,
                       responseColName = "BAGRu",
                       predictorsColNo = 3:13,
                       spacevar = "FAT__ID",
-                      ncores = 10,
                       bot,
                       alert_chats)
 {
   
   
   a <- Sys.info()
-  for(i in 1:length(alert_chats)){bot$send_message(chat_id = alert_chats[i],text = paste0("Initiated calculations for response type ",response_type,
+  for(i in 1:length(alert_chats)){bot$send_message(chat_id = alert_chats[i],text = paste0("Initiated calculations for response type ",responseType,
                                                                                           ". Calculating on computer ", a[names(a)=="nodename"],
-                                                                                          ", on ", ncores, " cores, "," by user ", a[names(a)=="user"], 
+                                                                                           " by user ", a[names(a)=="user"], 
                                                                                           ". I will alert you when calculations are finished."
   ))
   }
@@ -63,16 +62,16 @@ modelling <- function(predResp,
   #run ffs model with Leave Location out CV
   # we use randomForest now, ranger defaults to num.threads = number of CPUs available
   # we don't want to mess with double parallel
-  predictors <- predResp %>% select(all_of(predictorsColNo))
+  predictors <- predResp %>% ungroup() %>% dplyr::select(dplyr::all_of(predictorsColNo))
   response <- factor(predResp %>% pull(all_of(responseColName)))
   
   
-  cl <- makeCluster(ncores)
-  registerDoParallel(cl)
-  set.seed(10)
+  #cl <- makeCluster(ncores)
+  #registerDoParallel(cl)
+  #set.seed(10)
   
   
-  ffsmodel <- ffs(predictors,
+  ffsmodel <- par_ffs(predictors,
                   response, 
                   metric="Kappa", 
                   method="rf",
@@ -83,10 +82,10 @@ modelling <- function(predResp,
   
   return(ffsmodel)
   
-  stopCluster(cl)
+  #stopCluster(cl)
   
   for(i in 1:length(alert_chats)){bot$send_message(chat_id = alert_chats[i],
-                                                   text = paste0("Finished calculations for response type ",response_type,
+                                                   text = paste0("Finished calculations for response type ",responseType,
                                                                  ". On computer ", a[names(a)=="nodename"], 
                                                                  ", Initiated by user ", a[names(a)=="user"], 
                                                                  " The accuracy of the model is: ", 

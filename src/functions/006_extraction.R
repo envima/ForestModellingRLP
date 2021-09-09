@@ -48,7 +48,7 @@ extraction <- function(rasterStack, pol, bufferSize = -20, idColName = "FAT__ID"
       LIDARIndices <- terra::crop(LIDARIndices, ext)
       all = rast(list(LIDARIndices, sen))
 
-      all = terra::crop(rasterStack, ext)
+      all = terra::crop(all, ext)
 
       df = terra::extract(all, vect(cur), df = TRUE)
       df = df %>% dplyr::mutate(cur %>% select((!!sym(idColName))))
