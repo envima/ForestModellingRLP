@@ -27,7 +27,9 @@ prep_hansen <- function(treeCover = hansen[[1]], loss = hansen[[2]], gain = hans
                          updatevalue = 1)
     
     if (!is.null(changeCRS)) {
-      forest = terra::project(forest, changeCRS)
+      forest = terra::project(forest, changeCRS,
+                              res = 20,
+                              method = "nearest neighbor")
     }
     return (forest)
     

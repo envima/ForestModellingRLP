@@ -6,6 +6,10 @@
 #' @author [name], [email@com]
 #'
 
+
+# 0 - set up ####
+#---------------#
+
 library(envimaR)
 library(rprojroot)
 root_folder = find_rstudio_root_file()
@@ -26,16 +30,41 @@ source(file.path(root_folder, "src/functions/000_setup.R"))
 #                                                          
 #                     polygon of RLP with buffer of 200m, source: https://opendata-esri-de.opendata.arcgis.com/datasets/esri-de-content::landesgrenze-rlp/data
 
+# 1.1 - download sentinel data ####
+#---------------------------------#
+
+# use conda environment with earth engine to download Sentinel-2 data
+use_condaenv("gee-demo", conda = "auto",required = TRUE)
+ee$Initialize() # Trigger the earth engine authentication
+
+# Download Sentinel-2 data at Level 2A
+download_sentinel(startdate = "2019-06-21", 
+                  enddate = "2019-06-30", 
+                  borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"),
+                  MaxCloud = 2,
+                  outfilePath = file.path(envrmt$summer, "/"))
+
+# Download Sentinel-2 data at Level 2A
+download_sentinel(startdate = "2019-02-21", 
+                  enddate = "2019-02-30", 
+                  borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"),
+                  MaxCloud = 2,
+                  outfilePath = file.path(envrmt$winter, "/"))
+
+
+# 1.2 - prepare Sentinel data ####
+#--------------------------------#
+
 
 for (i in c("summer", "winter")) {
   
-  prepSentinel(resolution = 20,
-               folderNames = list.files(envrmt[[i]], full.names = TRUE),
-               fileNames = list.files(envrmt[[i]], full.names = FALSE),
-               outputPath = envrmt[[i]])
+#  prepSentinel(resolution = 20,
+ #              folderNames = list.files(envrmt[[i]], full.names = TRUE),
+  #             fileNames = list.files(envrmt[[i]], full.names = FALSE),
+   #            outputPath = envrmt[[i]])
   
   sentinel = merge_crop_raster(listOfFiles = list.files(envrmt[[i]], pattern = glob2rx("*.grd"), full.names = TRUE),
-                               border = read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Landesgrenze_RLP/Landesgrenze_RLP.shp"),
+                               border = read_sf(file.path(envrmt$border, "border_buffer_200m.gpkg")),
                                borderCrs = TRUE,
                                buffer = 200)
   
@@ -49,6 +78,8 @@ for (i in c("summer", "winter")) {
 # 2. Hansen forest cover ####
 #---------------------------#
 
+# 2.1 - download hansen data treecover, gain and loss ####
+#--------------------------------------------------------#
 
 #load data tiles to list
 lstHansen = list(
@@ -71,7 +102,7 @@ forestMask = prep_hansen(treeCover = rast(lstHansen[[1]]),
                          changeCRS = "epsg:25832")
 # same resolution as Sentinel:
 forestMask = terra::mask(forestMask, vect(sf::read_sf(file.path(envrmt$border, "border_buffer_200m.gpkg"))))
-forestMask = terra::resample(forestMask, terra::rast(file.path(envrmt$summer, "summer.tif")))
+
 # safe raster
 terra::writeRaster(forestMask, file.path(envrmt$hansen, "forestMask.tif"), overwrite = TRUE)
 
