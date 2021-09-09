@@ -78,6 +78,8 @@ for (i in c("summer", "winter")) {
 # 2. Hansen forest cover ####
 #---------------------------#
 
+download_hansen(borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"))
+  
 # 2.1 - download hansen data treecover, gain and loss ####
 #--------------------------------------------------------#
 
