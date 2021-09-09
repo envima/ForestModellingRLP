@@ -38,6 +38,7 @@ libs <- c("terra",
 # Set project specific subfolders
 projectDirList   = c("data/",
                      "data/001_raw_data/FID/",
+                     "data/001_raw_data/border/",
                      "data/001_raw_data/hansen/",
                      "data/001_raw_data/sentinel/",
                      "data/001_raw_data/sentinel/winter/",

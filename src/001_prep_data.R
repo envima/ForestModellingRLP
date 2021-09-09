@@ -53,27 +53,29 @@ for (i in c("summer", "winter")) {
 #load data tiles to list
 lstHansen = list(
   c(list.files(file.path(envrmt$hansen), pattern = "treecover2000", full.names = TRUE)),
-  c(list.files(file.path(envrmt$hansen), pattern = "lossyear", full.names = TRUE)),
+  c(list.files(file.path(envrmt$hansen), pattern = "loss", full.names = TRUE)),
   c(list.files(file.path(envrmt$hansen), pattern = "gain", full.names = TRUE)))
 
-hansen = list()
-for (i in 1:length(lstHansen)) {
-  hansen[[i]] = merge_crop_raster(listOfFiles = lstHansen[[i]],
-                                  border = read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Landesgrenze_RLP/Landesgrenze_RLP.shp"),
-                                  changeBorderCrs = TRUE,
-                                  buffer = 200)
-}
+#hansen = list()
+#for (i in 1:length(lstHansen)) {
+#  hansen[[i]] = merge_crop_raster(listOfFiles = lstHansen[[i]],
+#                                  border = read_sf("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/Landesgrenze_RLP/Landesgrenze_RLP.shp"),
+#                                  changeBorderCrs = TRUE,
+#                                  buffer = 200)
+#}
 
 
-forestMask = prep_hansen(treeCover = rast(hansen[[1]]),
-                         loss = rast(hansen[[2]]),
-                         gain = rast(hansen [[3]]),
+forestMask = prep_hansen(treeCover = rast(lstHansen[[1]]),
+                         loss = rast(lstHansen[[2]]),
+                         gain = rast(lstHansen [[3]]),
                          changeCRS = "epsg:25832")
 # same resolution as Sentinel:
-forestMask = terra::resample(forestMask, terra::rast(file.path(envrmt$summer, "sentinel_summer.tif")))
+forestMask = terra::mask(forestMask, vect(sf::read_sf(file.path(envrmt$border, "border_buffer_200m.gpkg"))))
+forestMask = terra::resample(forestMask, terra::rast(file.path(envrmt$summer, "summer.tif")))
 # safe raster
 terra::writeRaster(forestMask, file.path(envrmt$hansen, "forestMask.tif"), overwrite = TRUE)
-rm(lstHansen, hansen, forestMask)
+
+rm(lstHansen, forestMask)
 
 
 # 3 - forest inventory data ####

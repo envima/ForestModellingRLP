@@ -11,9 +11,7 @@
 
 prep_hansen <- function(treeCover = hansen[[1]], loss = hansen[[2]], gain = hansen[[3]], changeCRS = "epsg:25832"){
 
-    treeCover = hansen[[1]]
-    loss = hansen[[2]]
-    gain = hansen[[3]]
+  
     
     # all forest loss should be removed from treeCover
     loss[loss > 0] <- NA 
