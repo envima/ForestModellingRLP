@@ -6,6 +6,9 @@
 #' @author [name], [email@com]
 #'
 
+# 0 - set up ####
+#---------------#
+
 library(envimaR)
 library(rprojroot)
 root_folder = find_rstudio_root_file()
@@ -78,7 +81,7 @@ extract$surface_intensity_mean = NULL
 extract$ID = NULL
 
 extract$Quality = paste0(extract$BAGRu, "_", extract$Phase)
-
+#saveRDS(extract, file.path(envrmt$model_training_data, "extract_merge.RDS"))
 
 # 2.1 balance main model ####
 #---------------------------#
@@ -116,9 +119,9 @@ ddply(diverse,~BAGRu,summarise,number_of_distinct_locations=n_distinct(FAT__ID))
 
 # 2.3 balance successional stages ####
 #------------------------------------#
-
-data = extract %>% filter(Phase != "Etb")
-
+extract = readRDS(file.path(envrmt$model_training_data, "extract_merge.RDS"))
+data = extract %>% filter(Phase != "Etb")%>% filter(Quality != "Ki_Qua") %>%
+  filter(BAGRu != "Ta")
 
 for (i in unique(data$BAGRu)) {
   df = data %>% filter(BAGRu == i)
