@@ -9,7 +9,7 @@
 
 
 
-prep_hansen <- function(treeCover = hansen[[1]], loss = hansen[[2]], gain = hansen[[3]], changeCRS = "epsg:25832"){
+prep_hansen <- function(treeCover, loss, gain, changeCRS = "epsg:25832"){
 
   
     
@@ -27,9 +27,12 @@ prep_hansen <- function(treeCover = hansen[[1]], loss = hansen[[2]], gain = hans
                          updatevalue = 1)
     
     if (!is.null(changeCRS)) {
-      forest = terra::project(forest, changeCRS,
-                              res = 20,
-                              method = "nearest neighbor")
+      template = forest
+      template = terra::project(template, changeCRS)
+      res(template)<- 20
+      forest = terra::project(forest, 
+                              template,
+                               method = "near")
     }
     return (forest)
     

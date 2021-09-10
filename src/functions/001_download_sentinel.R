@@ -9,11 +9,11 @@
 #' @return 
 
 
-download_sentinel = function(startdate = "2019-06-21", 
+download_sentinel = function(startdate = "2019-06-29", 
                              enddate = "2019-06-30", 
                              borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"),
-                             MaxCloud = 2,
-                             outfilePath = file.path(envrmt$summer)) {
+                             MaxCloud = 5,
+                             outfilePath = file.path(envrmt$summer, "/")) {
   
   # Define an image Collection of sentinel-2 Images at Level 2-A
   # More info at: https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR
@@ -36,34 +36,61 @@ download_sentinel = function(startdate = "2019-06-21",
     filterDate(startdate, enddate)$
     filterBounds(region)
   # Number and dates of selected images
-  ee_get_date_ic(img)
-  
-  
-  #img$getInfo()
+  tiles = ee_get_date_ic(img)
+  print(tiles)
   
   # create an Image and get bandnames
   selected_images = img$mosaic()
   band_names = selected_images$bandNames()$getInfo()   
   band_names = band_names[1:12]
-  print(paste("Download the following band: ", band_names))
+  #print(paste("Download the following band: ", band_names))
   # select bands 
   img = img$select(band_names)
   
+  continue = readline("Do you want to download all the sentinel tiles listed above?[TRUE/FALSE]")  
   
-  img_02 = ee_imagecollection_to_local(
-    ic = img,
-    dsn = outfilePath,
-    region = region,
-    crs = 'EPSG:25832',
-    via = "drive",
-    container = "rgee_backup",
-    maxPixels = 1e+09,
-    lazy = FALSE,
-    public = FALSE,
-    add_metadata = TRUE,
-    timePrefix = TRUE,
-    quiet = FALSE,
-    scale = 20
-  )
-  
+  if (continue == TRUE) {
+    #img$getInfo()
+    
+    
+    img_02 = ee_imagecollection_to_local(
+      ic = img,
+      dsn = outfilePath,
+      region = region,
+      crs = 'EPSG:25832',
+      via = "drive",
+      container = "rgee_backup",
+      maxPixels = 1e+09,
+      lazy = FALSE,
+      public = FALSE,
+      add_metadata = TRUE,
+      timePrefix = TRUE,
+      quiet = FALSE,
+      scale = 20
+    )
+  } # end if 
+  if (continue == FALSE) {
+    #------------------------
+    continue = readline("Do you want to download one specific tile?[y/n]")  
+    if (continue == "y" | continue == "Y") {
+      nTile = readline("Which one?[number of tile in list above]")
+      
+      img2 = img$filterMetadata("DATATAKE_IDENTIFIER" , "equals", tiles$id[[as.integer(nTile)]])
+      
+      img_02 = ee_imagecollection_to_local(
+        ic = img2,
+        dsn = outfilePath,
+        region = region,
+        crs = 'EPSG:25832',
+        via = "drive",
+        container = "rgee_backup",
+        maxPixels = 1e+09,
+        lazy = FALSE,
+        public = FALSE,
+        add_metadata = TRUE,
+        timePrefix = TRUE,
+        quiet = FALSE,
+        scale = 20)
+    }
+  }
 }

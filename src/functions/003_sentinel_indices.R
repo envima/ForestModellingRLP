@@ -14,24 +14,24 @@
 sentinelIndices <- function(filePath,
                             outPath,
                             suffix = "_summer",
-                            redEdge1 = "B05",
-                            redEdge2 = "B06",
-                            redEdge3 = "B07",
-                            nir = "B08",
+                            redEdge1 = "B5",
+                            redEdge2 = "B6",
+                            redEdge3 = "B7",
+                            nir = "B8",
                             swir2 = "B11", 
                             swir3 = "B12",
-                            red = "B04",
-                            green = "B03", 
-                            blue = "B02") {
+                            red = "B4",
+                            green = "B3", 
+                            blue = "B2") {
 
 
 # load raster
 r = raster::stack(filePath)
 
 #calculate indices
-RGBIndices <- uavRst::rgb_indices(red = terra::subset(r, red), 
-                                  green = terra::subset(r, green), 
-                                  blue = terra::subset(r, blue))
+RGBIndices <- uavRst::rgb_indices(red = r[[red]], 
+                                  green = r[[green]], 
+                                  blue = r[[blue]])
 spectralIndices <- RStoolbox::spectralIndices(img = r, 
                                               redEdge1, 
                                               redEdge2, 
