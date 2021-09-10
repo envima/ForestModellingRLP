@@ -67,7 +67,7 @@ for (i in c("summer", "winter")) {
   
   ind = sentinelIndices(filePath = file.path(envrmt[[i]], "summerbackup.tif"),
                         outPath = file.path(envrmt[[i]], paste0(i, ".tif")),
-                        suffix = "")
+                        suffix = paste0("_", i))
   
 }
 
