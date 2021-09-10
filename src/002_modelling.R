@@ -178,9 +178,8 @@ for (i in lstQuality) {
   mod = modelling(predResp,
                   responseColName = "BAGRu",
                   responseType = responseType,
-                  predictorsColNo = 2:113,
+                  predictorsColNo = 2:145,
                   spacevar = "FAT__ID",
-                  ncores = 10,
                   bot = Bot(token = readLines(file.path(envrmt$models, "telegram_bot_token.txt"))),
                   alert_chats = c("1083414512")
                   )
