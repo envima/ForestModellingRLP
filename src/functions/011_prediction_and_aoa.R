@@ -13,7 +13,7 @@ prediction_aoa <- function(lstSpecies = c("main", "diverse"), lstQuality = "qual
     
     mod <- readRDS(list.files(envrmt$models, pattern= species, full.names = TRUE))
     # do not choose terra package, raster attributes are still an issue here
-    selvar <- raster::stack(file.path(envrmt$selected_variables,paste0(species, ".grd")))
+    selvar <- raster::stack(file.path(envrmt$selected_variables,paste0(species, ".tif")))
     
     #prediction for species model
     start_time <- Sys.time()
@@ -22,7 +22,7 @@ prediction_aoa <- function(lstSpecies = c("main", "diverse"), lstQuality = "qual
     cat("predicted ", species, " model in ",  end_time - start_time, "minutes\n")
    
     # safe prediction
-    r <- writeRaster(prediction, file.path(envrmt$prediction, paste0(species, "_pred.grd")), overwrite = TRUE)
+    r <- writeRaster(prediction, file.path(envrmt$prediction, paste0(species, "_pred.tif")), overwrite = TRUE)
     hdr(r, format = "ENVI")
     saveRDS(prediction, file.path(envrmt$prediction, paste0(species, "_pred.RDS")))
     #---
@@ -34,7 +34,7 @@ prediction_aoa <- function(lstSpecies = c("main", "diverse"), lstQuality = "qual
     end_time <- Sys.time()
     cat("calculated aoa for ", species, " model in ",  end_time - start_time, "minutes\n")
     
-    r <- writeRaster(aoa, file.path(envrmt$aoa, paste0(species, "_aoa.grd")), overwrite = TRUE)
+    r <- writeRaster(aoa, file.path(envrmt$aoa, paste0(species, "_aoa.tif")), overwrite = TRUE)
     hdr(r, format = "ENVI")
     # ---
     
@@ -52,7 +52,7 @@ prediction_aoa <- function(lstSpecies = c("main", "diverse"), lstQuality = "qual
       
       # load model and selected variables
       model <- readRDS(file.path(envrmt$models, i))
-      selvar <- raster::stack(file.path(envrmt$selected_variables, paste0(response_type, ".grd")))
+      selvar <- raster::stack(file.path(envrmt$selected_variables, paste0(response_type, ".tif")))
       selvar <- mask(selvar, mask) # apply mask
       
       # prediction
@@ -62,7 +62,7 @@ prediction_aoa <- function(lstSpecies = c("main", "diverse"), lstQuality = "qual
       
       print(paste("finished prediction ", response_type, "in ", end_time - start_time, " minutes"))
       
-      r <- writeRaster(pred, file.path(envrmt$prediction, paste0(response_type, "_", species, "_pred.grd")), overwrite = TRUE) #save raster
+      r <- writeRaster(pred, file.path(envrmt$prediction, paste0(response_type, "_", species, "_pred.tif")), overwrite = TRUE) #save raster
       hdr(r, format = "ENVI")
       saveRDS(pred, file.path(envrmt$prediction, paste0(response_type, "_", species, "_pred.RDS")))
       #---
@@ -74,7 +74,7 @@ prediction_aoa <- function(lstSpecies = c("main", "diverse"), lstQuality = "qual
       end_time <- Sys.time()
       print(paste("finished aoa for ", response_type, "in ", end_time - start_time, " minutes"))
       
-      r <- writeRaster(aoa, file.path(envrmt$aoa, paste0(species, "_aoa.grd")), overwrite = TRUE)
+      r <- writeRaster(aoa, file.path(envrmt$aoa, paste0(species, "_aoa.tif")), overwrite = TRUE)
       hdr(r, format = "ENVI")
       # ---
                                          
