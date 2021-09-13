@@ -15,7 +15,7 @@ select_variables <- function(lstModels, predictors) {
     r = terra::subset(predictors, selVars)
     # safe raster stack
     fileName = gsub("quality_|species_|_ffs.RDS", "",i)
-    terra::writeRaster(file.path(envrmt$selected_variables, paste0(fileName, ".grd")))
+    terra::writeRaster(r, file.path(envrmt$selected_variables, paste0(fileName, ".tif")))
   
   } #end for loop
   

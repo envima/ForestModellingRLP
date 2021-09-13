@@ -6,6 +6,9 @@
 #' @author [name], [email@com]
 #'
 
+# 0 - set up ####
+#---------------#
+
 library(envimaR)
 library(rprojroot)
 root_folder = find_rstudio_root_file()
@@ -171,7 +174,7 @@ for (i in lstQuality) {
   responseType = gsub(".RDS", "", responseType)
   
   mod = modelling(predResp,
-                  responseColName = "BAGRu",
+                  responseColName = "Quality",
                   responseType = responseType,
                   predictorsColNo = 2:131,
                   spacevar = "FAT__ID",
@@ -186,6 +189,15 @@ for (i in lstQuality) {
 # 4 - prediction & AOA ####
 #-------------------------#
 
+summer = terra::rast(file.path(envrmt$summer, "summer.tif"))
+winter = terra::rast(file.path(envrmt$winter, "winter.tif"))
+lidar = terra::rast(file.path(envrmt$lidar, "lidar.tif"))
+predictors = terra::rast(list(summer, winter, lidar))
+rm(summer, winter, lidar)
+
+lstModels = list.files(file.path(envrmt$models), full.names = FALSE)
+# select variables for each model
+select_variables(lstModels, predictors)
 
 prediction_aoa(lstSpecies = c("main", "diverse"), 
                lstQuality = "quality")
