@@ -25,7 +25,7 @@ download_sentinel = function(startdate = "2019-06-29",
   
   # Define an area of interest.
   region  = sf::read_sf(borderFilePath) %>%
-    sf::st_transform("EPSG:32632") %>%
+    sf::st_transform("EPSG:25832") %>%
     rgee::sf_as_ee()
   # transform to EarthEngine Object: Geometry
   region = region$geometry()$bounds()
@@ -34,7 +34,8 @@ download_sentinel = function(startdate = "2019-06-29",
   
   img = img$filter(ee$Filter$lte("CLOUDY_PIXEL_PERCENTAGE", MaxCloud))$
     filterDate(startdate, enddate)$
-    filterBounds(region)
+    filterBounds(region)$
+    map(function(x) x$reproject("EPSG:25832"))
   # Number and dates of selected images
   tiles = ee_get_date_ic(img)
   print(tiles)
@@ -75,22 +76,22 @@ download_sentinel = function(startdate = "2019-06-29",
     if (continue == "y" | continue == "Y") {
       nTile = readline("Which one?[number of tile in list above]")
       
-      img2 = img$filterMetadata("DATATAKE_IDENTIFIER" , "equals", tiles$id[[as.integer(nTile)]])
+      #img2 = img$filterMetadata("DATATAKE_IDENTIFIER" , "equals", "20190224T103019_20190224T103021_T32UNV")
+      img2 =ee$Image(tiles$id[[as.integer(nTile)]])$reproject("EPSG:25832")
       
-      img_02 = ee_imagecollection_to_local(
-        ic = img2,
-        dsn = outfilePath,
+      
+      task_img <- ee_image_to_drive(
+        image = img,
+        folder = "rgee_backup",
+        scale = 20,
         region = region,
-        crs = 'EPSG:25832',
-        via = "drive",
-        container = "rgee_backup",
-        maxPixels = 1e+09,
-        lazy = FALSE,
-        public = FALSE,
-        add_metadata = TRUE,
-        timePrefix = TRUE,
-        quiet = FALSE,
-        scale = 20)
+        maxPixels = 213152170
+      )
+      
+      task_img$start()
+      ee_monitoring(task_img)
+      # Move results from Drive to local
+      ee_drive_to_local(task = task_img, dsn = outfilePath)
     }
   }
 }

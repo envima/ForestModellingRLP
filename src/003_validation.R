@@ -7,6 +7,9 @@
 #' @author [name], [email@com]
 #'
 
+# 0 - set up ####
+#---------------#
+
 library(envimaR)
 library(rprojroot)
 root_folder = find_rstudio_root_file()
@@ -16,19 +19,9 @@ source(file.path(root_folder, "src/functions/000_setup.R"))
 # 1 - validation ####
 #-------------------#
 
-polygons = sf::read_sf(file.path(envrmt$FID, "Trainingsgebiete_RLP.gpkg")) %>% st_drop_geometry()
-# relevant class information from original polygons
-polygons = polygons[,c("FAT__ID", "Phase", "BAGRu")]
-# attach relevant class information to full extraction set
-extract = readRDS(file.path(envrmt$model_training_data, "extract.RDS"))
+# extraction set with relevant class information attatched
+extract = readRDS(file.path(envrmt$model_training_data, "extract_merge.RDS"))
 
-# format properly
-extract = merge(extract, polygons, by = "FAT__ID")
-rm(polygons)
-extract$surface_intensity_mean = NULL
-extract$ID = NULL
-
-extract$Quality = paste0(extract$BAGRu, "_", extract$Phase)
 
 for (i in c("main", "diverse", "Bu", "Fi", "Ei", "Dou", "Lä", "Ki", "Lbk", "Lbl")) {
   validation(extr = extract,
