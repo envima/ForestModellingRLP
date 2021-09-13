@@ -38,17 +38,17 @@ use_condaenv("gee-demo", conda = "auto",required = TRUE)
 ee$Initialize() # Trigger the earth engine authentication
 
 # Download Sentinel-2 data at Level 2A
-download_sentinel(startdate = "2019-06-29", 
+download_sentinel(startdate = "2019-06-28", 
                   enddate = "2019-06-30", 
                   borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"),
                   MaxCloud = 5,
                   outfilePath = file.path(envrmt$summer, "/"))
 
 # Download Sentinel-2 data at Level 2A
-download_sentinel(startdate = "2019-02-21", 
-                  enddate = "2019-02-30", 
+download_sentinel(startdate = "2019-02-22", 
+                  enddate = "2019-02-25", 
                   borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"),
-                  MaxCloud = 5,
+                  MaxCloud = 10,
                   outfilePath = file.path(envrmt$winter, "/"))
 
 
@@ -76,7 +76,8 @@ for (i in c("summer", "winter")) {
 
 # 2.1 - download hansen data treecover, gain and loss ####
 #--------------------------------------------------------#
-download_hansen(borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"))
+download_hansen(borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"),
+                outPath = file.path(envrmt$hansen, "/hansen.tif"))
 
 # 2.2 - create forest mask ####
 #-----------------------------#
