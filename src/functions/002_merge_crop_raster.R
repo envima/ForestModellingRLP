@@ -2,38 +2,36 @@
 #' @doctype function
 #' @description
 #' @param listOfFiles
-#' @param border
-#' @param changeBorderCrs
-#' @param buffer
+#' @param setNAValues = 
 #' @return 
 
 
 
-merge_crop_raster <- function(listOfFiles, border, changeBorderCrs = TRUE, buffer = 200) {
- 
-   # change crs to crs of raster
-  if (changeBorderCrs == TRUE) {
-    border <- sf::st_transform(border, crs(terra::rast(listOfFiles[1]))) # reproject to first raster in listOfFiles
-  }
-  # add a buffer around the border
- if (buffer != 0) {
-    border <- sf::st_buffer(border, dist = buffer) #buffer of 200m around border
-  }
+merge_crop_raster <- function(listOfFiles, setNAValues = cbind(-Inf, 0.00001, NA)) {
   
-  #merge all tiles
+  
+  
   aerialBricks <- list()
+  # if background values are != NA you can change them to the value you want
+  if (!is.null(setNAValues)) {
+    for(i in listOfFiles){
+      r <- terra::rast(i)
+      r = terra::classify(r, setNAValues, right=FALSE)
+      terra::writeRaster(r, i, overwrite = TRUE)
+      rm(r)
+      cat(paste("Finished reclassify background values to NA.\n"))
+    }
+  }
+  # create list with rast objects
   for(i in listOfFiles){
-    r <- raster::stack(i)
-    r<- raster::crop(r, border)
-    cat(paste("cropped raster ", i, "\n"))
+    r <- terra::rast(i)
     aerialBricks <- c(aerialBricks, r)
   }
   cat(paste("start merging raster tiles.\n"))
-
   
   # if you have many SpatRasters make a SpatRasterCollection from a list
-  aerialBricks$fun = "mean"
-  m <- do.call(raster::mosaic, aerialBricks)
+  rscr = terra::src(aerialBricks)
+  m <- terra::mosaic(rscr, fun = "mean")
   
   return(m)
 } # end of function

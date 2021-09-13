@@ -32,23 +32,26 @@ libs <- c("terra",
           "RColorBrewer",
           "gt",
           "yaml",
-          "webshot"
+          "webshot",
+          "reticulate",
+          "rgee"
 )
 
 # Set project specific subfolders
 projectDirList   = c("data/",
                      "data/001_raw_data/FID/",
+                     "data/001_raw_data/border/",
                      "data/001_raw_data/hansen/",
                      "data/001_raw_data/sentinel/",
                      "data/001_raw_data/sentinel/winter/",
                      "data/001_raw_data/sentinel/summer/",
                      "data/001_raw_data/lidar/",
-                     "data/002_modelling/model_training_data" ,
+                     "data/002_modelling/model_training_data/" ,
                      "data/002_modelling/models/",
                      "data/002_modelling/prediction/",
                      "data/002_modelling/aoa/",
                      "data/002_modelling/selected_variables/",
-                     "data/003_validation",
+                     "data/003_validation/",
                      "data/003_validation/confusionmatrix/",
                      "data/003_validation/varImp/",
                      "data/003_validation/figures/",
@@ -59,7 +62,7 @@ projectDirList   = c("data/",
                      "notes/",
                      "src/",
                      "src/deprecated/",
-                     "src/functions")
+                     "src/functions/")
 
 # Load libraries and create environment object to be used in other scripts for path navigation
 project_folders <- list.dirs(path = root_folder, full.names = FALSE, recursive = TRUE)
