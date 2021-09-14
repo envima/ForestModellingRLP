@@ -22,8 +22,7 @@ prediction_aoa <- function(lstSpecies = c("main", "diverse"), lstQuality = "qual
     cat("predicted ", species, " model in ",  end_time - start_time, "minutes\n")
    
     # safe prediction
-    r <- writeRaster(prediction, file.path(envrmt$prediction, paste0(species, "_pred.tif")), overwrite = TRUE)
-    hdr(r, format = "ENVI")
+    r <- terra::writeRaster(prediction, file.path(envrmt$prediction, paste0(species, "_pred.tif")), overwrite = TRUE)
     saveRDS(prediction, file.path(envrmt$prediction, paste0(species, "_pred.RDS")))
     #---
     
@@ -34,8 +33,7 @@ prediction_aoa <- function(lstSpecies = c("main", "diverse"), lstQuality = "qual
     end_time <- Sys.time()
     cat("calculated aoa for ", species, " model in ",  end_time - start_time, "minutes\n")
     
-    r <- writeRaster(aoa, file.path(envrmt$aoa, paste0(species, "_aoa.tif")), overwrite = TRUE)
-    hdr(r, format = "ENVI")
+    r <- terra::writeRaster(aoa, file.path(envrmt$aoa, paste0(species, "_aoa.tif")), overwrite = TRUE)
     # ---
     
     # predict quality
@@ -62,8 +60,7 @@ prediction_aoa <- function(lstSpecies = c("main", "diverse"), lstQuality = "qual
       
       print(paste("finished prediction ", response_type, "in ", end_time - start_time, " minutes"))
       
-      r <- writeRaster(pred, file.path(envrmt$prediction, paste0(response_type, "_", species, "_pred.tif")), overwrite = TRUE) #save raster
-      hdr(r, format = "ENVI")
+      r <- terra::writeRaster(pred, file.path(envrmt$prediction, paste0(response_type, "_", species, "_pred.tif")), overwrite = TRUE) #save raster
       saveRDS(pred, file.path(envrmt$prediction, paste0(response_type, "_", species, "_pred.RDS")))
       #---
       
@@ -74,8 +71,7 @@ prediction_aoa <- function(lstSpecies = c("main", "diverse"), lstQuality = "qual
       end_time <- Sys.time()
       print(paste("finished aoa for ", response_type, "in ", end_time - start_time, " minutes"))
       
-      r <- writeRaster(aoa, file.path(envrmt$aoa, paste0(species, "_aoa.tif")), overwrite = TRUE)
-      hdr(r, format = "ENVI")
+      r <- terra::writeRaster(aoa, file.path(envrmt$aoa, paste0(species, "_aoa.tif")), overwrite = TRUE)
       # ---
                                          
     } # end for loop
