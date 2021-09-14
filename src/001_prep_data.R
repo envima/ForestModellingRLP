@@ -58,15 +58,12 @@ download_sentinel(startdate = "2019-02-22",
 
 for (i in c("summer", "winter")) {
   
- # sentinel = merge_crop_raster(listOfFiles = list.files(envrmt[[i]], pattern = glob2rx("*.tif"), full.names = TRUE),
-  #                             setNAValues = cbind(-Inf, 0.00001, NA))
-  
-  #sentinel = terra::project(sentinel, terra::rast(file.path(envrmt$hansen, "forestMask.tif")))
+  sentinel = terra::rast(file.path(envrmt[[i]], paste0(i, ".tif")))
   sentinel = terra::mask(sentinel, terra::rast(file.path(envrmt$hansen, "forestMask.tif")))
   terra::writeRaster(sentinel, file.path(envrmt[[i]], paste0(i, "backup.tif")))
   
   ind = sentinelIndices(filePath = file.path(envrmt[[i]], "summerbackup.tif"),
-                        outPath = file.path(envrmt[[i]], paste0(i, ".tif")),
+                        outPath = file.path(envrmt[[i]], paste0(i, ".grd")),
                         suffix = paste0("_", i))
   
 }
@@ -82,10 +79,11 @@ download_hansen(borderFilePath = file.path(envrmt$border, "border_buffer_200m.gp
 # 2.2 - create forest mask ####
 #-----------------------------#
 
-forestMask = prep_hansen(treeCover = rast(list.files(file.path(envrmt$hansen), pattern = "treecover2000", full.names = TRUE)),
-                         loss = rast(list.files(file.path(envrmt$hansen), pattern = "loss", full.names = TRUE)),
-                         gain = rast(list.files(file.path(envrmt$hansen), pattern = "gain", full.names = TRUE)),
-                         changeCRS = "epsg:25832")
+hansen = terra::rast(file.path(envrmt$hansen, "hansen.tif"))
+
+forestMask = prep_hansen(treeCover = hansen$treecover2000,
+                         loss = hansen$loss,
+                         gain = hansen$gain)
 
 # mask to Hessen
 forestMask = terra::mask(forestMask, vect(sf::read_sf(file.path(envrmt$border, "border_buffer_200m.gpkg"))))

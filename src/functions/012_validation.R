@@ -46,6 +46,8 @@ validation = function(extr,
   # load model
   mod = readRDS(file.path(envrmt$models, paste0(m, "_ffs.RDS")))
   valid = stats::predict(object = mod, newdata = extr_sub)
+  aoa = CAST::aoa(newdata = extr_sub, model = mod)
+  
   
   val_df = data.frame(ID = pull(extr_sub, idCol),
                       Observed = pull(extr_sub, responseCol), 
