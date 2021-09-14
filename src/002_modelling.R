@@ -176,7 +176,7 @@ for (i in lstQuality) {
   responseType = gsub(".RDS", "", responseType)
   
   mod = modelling(predResp,
-                  responseColName = "BAGRu",
+                  responseColName = "Quality",
                   responseType = responseType,
                   predictorsColNo = 2:145,
                   spacevar = "FAT__ID",
