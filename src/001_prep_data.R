@@ -42,7 +42,7 @@ download_sentinel(startdate = "2019-06-28",
                   enddate = "2019-06-30", 
                   borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"),
                   MaxCloud = 5,
-                  outfilePath = file.path(envrmt$summer, "/"))
+                  outfilePath = file.path(envrmt$summer, "/summer.tif"))
 
 # Download Sentinel-2 data at Level 2A
 download_sentinel(startdate = "2019-02-22", 
@@ -58,10 +58,10 @@ download_sentinel(startdate = "2019-02-22",
 
 for (i in c("summer", "winter")) {
   
-  sentinel = merge_crop_raster(listOfFiles = list.files(envrmt[[i]], pattern = glob2rx("*.tif"), full.names = TRUE),
-                               setNAValues = cbind(-Inf, 0.00001, NA))
+ # sentinel = merge_crop_raster(listOfFiles = list.files(envrmt[[i]], pattern = glob2rx("*.tif"), full.names = TRUE),
+  #                             setNAValues = cbind(-Inf, 0.00001, NA))
   
-  sentinel = terra::project(sentinel, terra::rast(file.path(envrmt$hansen, "forestMask.tif")))
+  #sentinel = terra::project(sentinel, terra::rast(file.path(envrmt$hansen, "forestMask.tif")))
   sentinel = terra::mask(sentinel, terra::rast(file.path(envrmt$hansen, "forestMask.tif")))
   terra::writeRaster(sentinel, file.path(envrmt[[i]], paste0(i, "backup.tif")))
   

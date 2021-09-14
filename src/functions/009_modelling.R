@@ -80,7 +80,7 @@ modelling <- function(predResp,
                   tuneLength = 1, 
                   ntree = 50)
   
-  return(ffsmodel)
+  
   
   #stopCluster(cl)
   
@@ -94,4 +94,5 @@ modelling <- function(predResp,
   )
   }
   
+  return(ffsmodel)
 } # end function
