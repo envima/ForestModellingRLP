@@ -23,38 +23,41 @@ sentinelIndices <- function(filePath,
                             red = "B4",
                             green = "B3", 
                             blue = "B2") {
-
-
-# load raster
-r = raster::stack(filePath)
-
-#calculate indices
-RGBIndices <- uavRst::rgb_indices(red = r[[red]], 
-                                  green = r[[green]], 
-                                  blue = r[[blue]])
-spectralIndices <- RStoolbox::spectralIndices(img = r, 
-                                              redEdge1, 
-                                              redEdge2, 
-                                              redEdge3,
-                                              nir, 
-                                              swir1 = NULL,
-                                              swir2, 
-                                              swir3, 
-                                              red,
-                                              green, 
-                                              blue)
-
-# stack all layers to one stack
-r <- raster::stack(RGBIndices, spectralIndices, r)
-
-# rename
-names(r) = paste0(names(r), suffix)
-
-return(r)
-
-#safe
-if (!is.null(outPath)) {
-terra::writeRaster(r, outputPath, format="raster", overwrite = TRUE)
-}
+  
+  
+  # load raster
+  r = raster::stack(filePath)
+  
+  #calculate indices
+  RGBIndices <- uavRst::rgb_indices(red = r[[red]], 
+                                    green = r[[green]], 
+                                    blue = r[[blue]])
+  spectralIndices <- RStoolbox::spectralIndices(img = r, 
+                                                redEdge1, 
+                                                redEdge2, 
+                                                redEdge3,
+                                                nir, 
+                                                swir1 = NULL,
+                                                swir2, 
+                                                swir3, 
+                                                red,
+                                                green, 
+                                                blue)
+  
+  # stack all layers to one stack
+  r <- raster::stack(RGBIndices, spectralIndices, r)
+  
+  # rename
+  names(r) = paste0(names(r), suffix)
+  
+  
+  
+  #safe
+  if (!is.null(outPath)) {
+    r = terra::rast(r)
+    terra::writeRaster(r, outPath, overwrite = TRUE)
+  }
+  
+  return(r)
 } # end of function
 

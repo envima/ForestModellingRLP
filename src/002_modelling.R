@@ -190,6 +190,21 @@ for (i in lstQuality) {
 # 4 - prediction & AOA ####
 #-------------------------#
 
+# 4.1 - select variables ####
+#---------------------------#
+summer = terra::rast(file.path(envrmt$summer, "summer.tif"))
+winter = terra::rast(file.path(envrmt$winter, "winter.tif"))
+lidar = terra::rast(file.path(envrmt$lidar, "LIDAR.tif"))
+predictors = terra::rast(list(summer, winter, lidar))
+rm(summer, winter, lidar)
+
+lstModels = list.files(file.path(envrmt$models), full.names = FALSE)
+# select variables for each model
+select_variables(lstModels, predictors)
+
+# 4.2 prediction ####
+#-------------------#
+
 
 prediction_aoa(lstSpecies = c("main", "diverse"), 
                lstQuality = "quality")

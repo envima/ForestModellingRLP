@@ -38,17 +38,17 @@ use_condaenv("gee-demo", conda = "auto",required = TRUE)
 ee$Initialize() # Trigger the earth engine authentication
 
 # Download Sentinel-2 data at Level 2A
-download_sentinel(startdate = "2019-06-29", 
+download_sentinel(startdate = "2019-06-28", 
                   enddate = "2019-06-30", 
                   borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"),
                   MaxCloud = 5,
-                  outfilePath = file.path(envrmt$summer, "/"))
+                  outfilePath = file.path(envrmt$summer, "/summer.tif"))
 
 # Download Sentinel-2 data at Level 2A
-download_sentinel(startdate = "2019-02-21", 
-                  enddate = "2019-02-30", 
+download_sentinel(startdate = "2019-02-22", 
+                  enddate = "2019-02-25", 
                   borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"),
-                  MaxCloud = 5,
+                  MaxCloud = 10,
                   outfilePath = file.path(envrmt$winter, "/"))
 
 
@@ -58,16 +58,16 @@ download_sentinel(startdate = "2019-02-21",
 
 for (i in c("summer", "winter")) {
   
-  sentinel = merge_crop_raster(listOfFiles = list.files(envrmt[[i]], pattern = glob2rx("*.tif"), full.names = TRUE),
-                               setNAValues = cbind(-Inf, 0.00001, NA))
+ # sentinel = merge_crop_raster(listOfFiles = list.files(envrmt[[i]], pattern = glob2rx("*.tif"), full.names = TRUE),
+  #                             setNAValues = cbind(-Inf, 0.00001, NA))
   
-  sentinel = terra::project(sentinel, terra::rast(file.path(envrmt$hansen, "forestMask.tif")))
+  #sentinel = terra::project(sentinel, terra::rast(file.path(envrmt$hansen, "forestMask.tif")))
   sentinel = terra::mask(sentinel, terra::rast(file.path(envrmt$hansen, "forestMask.tif")))
   terra::writeRaster(sentinel, file.path(envrmt[[i]], paste0(i, "backup.tif")))
   
   ind = sentinelIndices(filePath = file.path(envrmt[[i]], "summerbackup.tif"),
                         outPath = file.path(envrmt[[i]], paste0(i, ".tif")),
-                        suffix = "")
+                        suffix = paste0("_", i))
   
 }
 
@@ -76,7 +76,8 @@ for (i in c("summer", "winter")) {
 
 # 2.1 - download hansen data treecover, gain and loss ####
 #--------------------------------------------------------#
-download_hansen(borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"))
+download_hansen(borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"),
+                outPath = file.path(envrmt$hansen, "/hansen.tif"))
 
 # 2.2 - create forest mask ####
 #-----------------------------#

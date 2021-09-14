@@ -26,14 +26,14 @@ prep_hansen <- function(treeCover, loss, gain, changeCRS = "epsg:25832"){
                          maskvalues = 1,
                          updatevalue = 1)
     
-    if (!is.null(changeCRS)) {
-      template = forest
-      template = terra::project(template, changeCRS)
-      res(template)<- 20
-      forest = terra::project(forest, 
-                              template,
-                               method = "near")
-    }
+    #if (!is.null(changeCRS)) {
+    #  template = forest
+    #  template = terra::project(template, changeCRS)
+    #  res(template)<- 20
+    #  forest = terra::project(forest, 
+    #                          template,
+    #                           method = "near")
+    #}
     return (forest)
     
   } # end of function
