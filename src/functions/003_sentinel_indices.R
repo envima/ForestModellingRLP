@@ -49,7 +49,7 @@ sentinelIndices <- function(filePath,
   r <- raster::stack(RGBIndices, spectralIndices, r)
   
   # rename
-  names(r) = paste0(names(r), suffix)
+  names(r) <- paste0(names(r), suffix)
   
   
 
