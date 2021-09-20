@@ -7,18 +7,15 @@
 
 
 
-
-setwd("E:/Waldmodellierung/ForestModellingRLP/")
-
-lstModels = list.files(pattern = ".RDS")
-varNames = read.csv("../../data/variables_full_names.csv", sep = ";")
+lstModels = list.files(file.path(envrmt$models), pattern = ".RDS")
+varNames = read.csv(file.path(envrmt$selected_variables, "variables_full_names.csv"), sep = ";")
 library(dplyr)
 
 #-------------
 for (i in 1:length(lstModels)) {
   n = gsub("_ffs.RDS","", lstModels[i])
   n = gsub("quality_", "", n)
-  mod = readRDS(lstModels[i])
+  mod = readRDS(file.path(envrmt$models, lstModels[i]))
   selectedvars = mod$selectedvars
   df2 = data.frame(Name = selectedvars,
                    model = 1)
