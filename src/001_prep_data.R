@@ -60,7 +60,7 @@ for (i in c("summer", "winter")) {
   
   sentinel = terra::rast(file.path(envrmt[[i]], paste0(i, ".tif")))
   sentinel = terra::mask(sentinel, terra::rast(file.path(envrmt$hansen, "forestMask.tif")))
-  terra::writeRaster(sentinel, file.path(envrmt[[i]], paste0(i, "backup.tif")))
+  terra::writeRaster(sentinel, file.path(envrmt[[i]], paste0(i, "backup.tif")), overwrite = TRUE)
   
   ind = sentinelIndices(filePath = file.path(envrmt[[i]], paste0(i, "backup.tif")),
                         outPath = file.path(envrmt[[i]], paste0(i, ".grd")),
