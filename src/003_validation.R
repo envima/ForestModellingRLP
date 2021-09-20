@@ -25,7 +25,7 @@ extract = readRDS(file.path(envrmt$model_training_data, "extract_merge.RDS"))
 
 for (i in c("main", "diverse", "Bu", "Fi", "Ei", "Dou", "Lä", "Ki", "Lbk", "Lbl")) {
   validation(extr = extract,
-             model = "main", 
+             model = i, 
              idCol = "FAT__ID", 
              responseCol = "BAGRu") 
   

@@ -21,10 +21,9 @@ validation = function(extr,
   meta = list()
   training_set = readRDS(file.path(envrmt$model_training_data, paste0(model,".RDS")))
   
-  meta$'Model' = m
-  meta$'Name' = m
+  meta$'Model' = model
   meta$'Number of training polygons' = training_set %>% select(all_of(idCol)) %>% n_distinct()
-  meta$'Number of training pixel per class' = as.list(table(select(training_set, all_of(responseCol))))
+  meta$'Number of training pixel per class' = max(table(select(training_set, all_of(responseCol))))
   meta$'Number of training pixel' = sum(table(select(training_set, all_of(responseCol))))
   
   
@@ -44,12 +43,15 @@ validation = function(extr,
   
   
   # load model
-  mod = readRDS(file.path(envrmt$models, paste0(m, "_ffs.RDS")))
+  mod = readRDS(file.path(envrmt$models, paste0(model, "_ffs.RDS")))
   valid = stats::predict(object = mod, newdata = extr_sub)
+  aoa = CAST::aoa(newdata = extr_sub, model = mod)
+  
   
   val_df = data.frame(ID = pull(extr_sub, idCol),
                       Observed = pull(extr_sub, responseCol), 
                       Predicted = valid)
+  
   
   names(val_df)[names(val_df) == "ID"] <- idCol
   
