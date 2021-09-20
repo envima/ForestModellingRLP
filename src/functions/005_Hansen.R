@@ -9,7 +9,7 @@
 
 
 
-prep_hansen <- function(treeCover, loss, gain, changeCRS = "epsg:25832"){
+prep_hansen <- function(treeCover, loss, gain){
 
   
     

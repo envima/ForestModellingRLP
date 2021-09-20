@@ -45,18 +45,15 @@ sentinelIndices <- function(filePath,
                                                 blue)
   
   # stack all layers to one stack
+  
   r <- raster::stack(RGBIndices, spectralIndices, r)
   
   # rename
-  names(r) = paste0(names(r), suffix)
+  names(r) <- paste0(names(r), suffix)
   
   
-  
-  #safe
-  if (!is.null(outPath)) {
-    r = terra::rast(r)
-    terra::writeRaster(r, outPath, overwrite = TRUE)
-  }
+
+  raster::writeRaster(r, outPath, overwrite = TRUE)
   
   return(r)
 } # end of function
