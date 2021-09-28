@@ -46,11 +46,21 @@ validation = function(extr,
   mod = readRDS(file.path(envrmt$models, paste0(model, "_ffs.RDS")))
   valid = stats::predict(object = mod, newdata = extr_sub)
   aoa = CAST::aoa(newdata = extr_sub, model = mod)
+  aoa = aoa$AOA
   
   
-  val_df = data.frame(ID = pull(extr_sub, idCol),
-                      Observed = pull(extr_sub, responseCol), 
-                      Predicted = valid)
+  val_df = extr_sub %>% select(all_of(idCol), !!(sym(responseCol))) %>% 
+    mutate(Observed = responseCol) %>%
+    select(-c(responseCol)) %>%
+    mutate(aoa = aoa) %>%
+    mutate(Predicted = valid)  %>%
+    # delete aoa from prediction
+    filter(aoa == 1) %>%
+    select(-c(aoa))
+  
+  #val_df = data.frame(ID = pull(extr_sub, idCol),
+   #                   Observed = pull(extr_sub, responseCol), 
+    #               Predicted = valid)
   
   
   names(val_df)[names(val_df) == "ID"] <- idCol
@@ -60,8 +70,8 @@ validation = function(extr,
   
   
   # output
-  saveRDS(val_cm, paste0(file.path(envrmt$validation), m, "_confusionmatrix.RDS"))
-  yaml::write_yaml(yaml::as.yaml(meta), file = paste0(file.path(envrmt$validation), m, "_meta.yaml"))
+  saveRDS(val_cm, paste0(file.path(envrmt$validation), model, "_confusionmatrix.RDS"))
+  yaml::write_yaml(yaml::as.yaml(meta), file = paste0(file.path(envrmt$validation), model, "_meta.yaml"))
   
   
 } # end of function

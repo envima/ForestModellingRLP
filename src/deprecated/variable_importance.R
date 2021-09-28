@@ -11,12 +11,9 @@
 # 1 - set up & load data
 #-----------------------
 
-require(tidyverse)
-require(gridExtra)
-setwd("D:/forest_modelling/ForestModellingRLP/data/models/")
 
-modelList = list.files(pattern = ".RDS")
-modelList = modelList[-1]
+modelList = list.files(file.path(envrmt$models), pattern = "quality", full.names = TRUE)
+
 plotNames = c("Beech", "Douglas fir", "Larch", "short-lived DT", "long-lived DT", "Oak", "Pine", "Spruce")
 
 
@@ -25,32 +22,32 @@ plotNames = c("Beech", "Douglas fir", "Larch", "short-lived DT", "long-lived DT"
 #------------------------------------------------------------------------
 
 for (i in 1:length(modelList)) {
-model = readRDS(modelList[i])
-
-# create dataframe with variable importance
-varperf <-max(model$selectedvars_perf)-model$selectedvars_perf
-varperf <- scales::rescale(varperf, to = c(0, 100))
-df <- data.frame(imp = prepend(varperf, varperf[1]))
-df2 <- df %>% 
-  tibble::rownames_to_column() %>% 
-  dplyr::rename("variable" = rowname) %>% 
-  dplyr::mutate(variable = model$selectedvars) %>%
-  arrange(imp) %>%
-  mutate(variable=factor(variable, levels=variable))
-
-# assign title to dataframe to use facet_grid in ggplot() function
-df2$title <- plotNames[i] 
-
-# plot
-assign(plotNames[i], ggplot2::ggplot(df2) +
-          geom_segment(aes(x = variable, y = 0, xend = variable, yend = imp)) +
-          geom_point(aes(x = variable, y = imp), show.legend = F) +
-          ylab ("")+
-          xlab("")+
-          coord_flip() +
-          theme_bw() +
-          facet_grid(. ~ title)
-) # end assign
+  model = readRDS(modelList[i])
+  
+  # create dataframe with variable importance
+  varperf <-max(model$selectedvars_perf)-model$selectedvars_perf
+  varperf <- scales::rescale(varperf, to = c(0, 100))
+  df <- data.frame(imp = prepend(varperf, varperf[1]))
+  df2 <- df %>% 
+    tibble::rownames_to_column() %>% 
+    dplyr::rename("variable" = rowname) %>% 
+    dplyr::mutate(variable = model$selectedvars) %>%
+    arrange(imp) %>%
+    mutate(variable=factor(variable, levels=variable))
+  
+  # assign title to dataframe to use facet_grid in ggplot() function
+  df2$title <- plotNames[i] 
+  
+  # plot
+  assign(plotNames[i], ggplot2::ggplot(df2) +
+           geom_segment(aes(x = variable, y = 0, xend = variable, yend = imp)) +
+           geom_point(aes(x = variable, y = imp), show.legend = F) +
+           ylab ("")+
+           xlab("")+
+           coord_flip() +
+           theme_bw() +
+           facet_grid(. ~ title)
+  ) # end assign
 } # end for-loop
 
 
@@ -58,7 +55,7 @@ assign(plotNames[i], ggplot2::ggplot(df2) +
 successional = grid.arrange(Beech, `Douglas fir`, Larch, `long-lived DT`, Oak, Pine, `short-lived DT`, Spruce, nrow = 4, ncol =2)
 
 
-ggsave(filename = paste0("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/images/variable_importance/successional_stages.png"),
+ggsave(filename = paste0(file.path(envrmt$illustrations, "successional_var_imp.png")),
        plot = successional, 
        width = 8,
        height = 12,
@@ -70,8 +67,8 @@ ggsave(filename = paste0("C:/Users/Lisa Bald/Uni_Marburg/Waldmodellierung/data/i
 #------------------------------------------------------------------------
 
 # load main and diverse tree species model
-mainModel = readRDS("meta_classes_main_trees_ffs.RDS")
-diverseModel = load("meta_classes_diverse_ffs.RData")
+mainDiverse = list.files(file.path(envrmt$illustrations), pattern = "quality")
+
 diverseModel = ffsmodel
 rm(ffsmodel, mod)
 mainDiverse = list(diverseModel, mainModel)
