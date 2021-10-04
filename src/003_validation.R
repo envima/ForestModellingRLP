@@ -23,12 +23,22 @@ source(file.path(root_folder, "src/functions/000_setup.R"))
 extract = readRDS(file.path(envrmt$model_training_data, "extract_merge.RDS"))
 
 
-for (i in c("main")) {
+
+for (i in c("main", "diverse")) {
   validation(extr = extract,
              model = i, 
              idCol = "FAT__ID", 
              responseCol = "Gruppe") 
   
+} # end for loop
+
+
+for (i in c("Bu", "Fi", "Ei", "Dou", "Lä", "Ki", "Lbk", "Lbl")) {
+  validation(extr = extract,
+             model = paste0("quality_", i), 
+             idCol = "FAT__ID", 
+             responseCol = "Quality") 
+  print(paste("Finished confusion matrix for model: ", i))
 } # end for loop
 
 
@@ -118,5 +128,29 @@ gtsave(meta_table,
 
 # 5 - selected variables plots ####
 #---------------------------------#
+
+# 5.1 successional stages ####
+#----------------------------#
+
+
+
+var_imp = variable_importance(modelList = list.files(file.path(envrmt$models), pattern = "quality", full.names = TRUE),
+                              plotNames = c("Beech", "Douglas fir", "Oak", "Spruce", "Pine",
+                                            "Larch", "short-lived DT", "long-lived DT")
+                              )
+
+
+
+
+# save image
+successional = grid.arrange(Beech, `Douglas fir`, Larch, `long-lived DT`, Oak, Pine, `short-lived DT`, Spruce, nrow = 4, ncol =2)
+
+ggsave(filename = file.path(envrmt$illustrations, "variable_importance_successional.png"),
+       plot = successional, 
+       width = 8,
+       height = 12,
+       limitsize = FALSE,
+       device = png())
+
 
 

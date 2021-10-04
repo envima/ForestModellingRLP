@@ -34,7 +34,8 @@ libs <- c("terra",
           "yaml",
           "webshot",
           "reticulate",
-          "rgee"
+          "rgee",
+          "gridExtra"
 )
 
 # Set project specific subfolders

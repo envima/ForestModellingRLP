@@ -58,7 +58,9 @@ download_sentinel(startdate = "2019-02-22",
 
 for (i in c("summer", "winter")) {
   
+
   sentinel = merge_crop_raster(listOfFiles = list.files(envrmt[[i]], pattern = glob2rx("*.tif"), full.names = TRUE))
+
   
   sentinel = terra::resample(sentinel, terra::rast(file.path(envrmt$hansen, "forestMask.tif")))
   terra::writeRaster(sentinel, file.path(envrmt$winter, "resampled.tif"))
