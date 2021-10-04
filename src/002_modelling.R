@@ -30,15 +30,28 @@ source(file.path(root_folder, "src/functions/000_setup.R"))
 
 summer <- terra::rast(file.path(envrmt$summer, "summer.tif"))
 winter <- terra::rast(file.path(envrmt$winter, "winter.tif"))
+lidar <- terra::rast(file.path(envrmt$lidar, "LIDAR_resampled.tif"))
 # stack all
-RLP <- terra::rast(list(summer, winter))
-rm(summer,winter)
+RLP <- terra::rast(list(summer, winter, lidar))
+rm(summer,winter, lidar)
 # 1.2 - load forest inventory data ####
 #-------------------------------------#
 
-pol = sf::read_sf(file.path(envrmt$FID, "Trainingsgebiete_RLP.gpkg"))
+pol = sf::read_sf(file.path(envrmt$FID, "Trainingsgebiete.gpkg"))
+pol = sf::st_transform(pol, crs(RLP))
 #pol = st_transform(rlp_forest, crs = 25832)
 
+#for Hessen:
+pol$FAT__ID = 1:nrow(pol)
+pol= pol %>%
+  mutate(Gruppe=replace(Gruppe, Gruppe== "BU", "Bu")) %>%
+  mutate(Gruppe=replace(Gruppe, Gruppe== "DGL", "Dou")) %>%
+  mutate(Gruppe=replace(Gruppe, Gruppe== "EI", "Ei")) %>%
+  mutate(Gruppe=replace(Gruppe, Gruppe== "ELB", "Lbl")) %>%
+  mutate(Gruppe=replace(Gruppe, Gruppe== "FI", "Fi")) %>%
+  mutate(Gruppe=replace(Gruppe, Gruppe== "KI" , "Ki")) %>%
+  mutate(Gruppe=replace(Gruppe, Gruppe== "LAE", "Lä")) %>%
+  mutate(Gruppe=replace(Gruppe, Gruppe== "WLB", "Lbk"))
 
 # 1.3 - extract ####
 #------------------#
@@ -48,17 +61,23 @@ fileName <- file.path(envrmt$lidar, "remote_sensing_userpwd.txt") # optional fil
 userpwd <- readChar(fileName, file.info(fileName)$size) # optional read account from file
 # open remote sensing database
 remotesensing <- RemoteSensing$new("http://192.168.191.183:8081", userpwd) # remote server
-# get one rasterdb
+
+
+# get rasterdb for RLP
 rasterdb <- remotesensing$rasterdb("RLP_forest_mask_20m_i4")
+# get rasterdb for Hessen
+rasterdb <- remotesensing$rasterdb("hessen_forest_20m_indices")
 
 
-rlpExtr = extraction(rasterStack = RLP, 
+
+extr = extraction(rasterStack = RLP, 
                      pol = pol, 
                      bufferSize = -20, 
                      idColName = "FAT__ID")
 
 
-saveRDS(rlpExtr, file.path(envrmt$model_training_data, "extract.RDS"))
+
+saveRDS(extr, file.path(envrmt$model_training_data, "extract_new.RDS"))
 
 bot = Bot(token = readLines(file.path(envrmt$models, "telegram_bot_token.txt")))
 alert_chats = c("1083414512")
@@ -68,7 +87,7 @@ bot$send_message(chat_id = alert_chats ,text = paste0("I finished extraction of 
 
 # 2 - balancing ####
 #-----------------#
-polygons = sf::read_sf(file.path(envrmt$FID, "Trainingsgebiete_RLP.gpkg")) %>% st_drop_geometry()
+polygons = sf::read_sf(file.path(envrmt$FID, "Trainingsgebiete.gpkg")) %>% st_drop_geometry()
 # relevant class information from original polygons
 polygons = polygons[,c("FAT__ID", "Phase", "BAGRu")]
 # attach relevant class information to full extraction set
@@ -81,7 +100,7 @@ extract$surface_intensity_mean = NULL
 extract$ID = NULL
 
 extract$Quality = paste0(extract$BAGRu, "_", extract$Phase)
-#saveRDS(extract, file.path(envrmt$model_training_data, "extract_merge.RDS"))
+saveRDS(extract, file.path(envrmt$model_training_data, "extract_merge.RDS"))
 
 # 2.1 balance main model ####
 #---------------------------#
@@ -101,21 +120,40 @@ ddply(main,~BAGRu,summarise,number_of_distinct_locations=n_distinct(FAT__ID))
 saveRDS(main, file.path(envrmt$model_training_data, "main.RDS"))
 bot$send_message(chat_id = alert_chats ,text = paste0("Finished balancing main model"))
 
+
+
+
+
+
 # 2.2 balance diverse model ####
 #------------------------------#
+extract = readRDS(file.path(envrmt$model_training_data, "extract_merge.RDS"))
 
-diverse = balancing(pred_resp = extract,
-                    response = "BAGRu",
-                    class = c("Fi", "Ei", "Ki", "Bu", "Dou", "Lbk", "Lbl", "Lä"),
-                    idCol = "FAT__ID")
+# 2.2.1 - balance only after amount of polygons ####
+#--------------------------------------------------#
+diverse = balance_polygons_only(pred_resp = extract,
+                                response = "Gruppe",
+                                class = unique(pred_resp$Gruppe),
+                                idCol = "FAT__ID")
 
-saveRDS(diverse, file.path(envrmt$model_training_data,"diverse.RDS"))
-bot$send_message(chat_id = alert_chats ,text = paste0("Finished balancing diverse model"))
+saveRDS(diverse, file.path(envrmt$model_training_data,"diverse_polygons_only.RDS"))
+
+# 2.2.2 -  balance  after amount of pixel and polygons ####
+#---------------------------------------------------------#
+
+diverse = balance_polygons_and_pixel(pred_resp = extract,
+                                response = "Gruppe",
+                                class = unique(pred_resp$Gruppe),
+                                idCol = "FAT__ID")
+
+saveRDS(diverse, file.path(envrmt$model_training_data,"diverse_polygons_and_pixel.RDS"))
+
 
 ##control
 head(diverse)
-as.data.frame(table(factor(diverse$FAT__ID)))
-ddply(diverse,~BAGRu,summarise,number_of_distinct_locations=n_distinct(FAT__ID))
+# number of pixel per class
+count(diverse, all_of(response))
+ddply(diverse,~Gruppe,summarise,number_of_distinct_locations=n_distinct(FAT__ID))
 
 # 2.3 balance successional stages ####
 #------------------------------------#

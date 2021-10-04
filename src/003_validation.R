@@ -23,11 +23,11 @@ source(file.path(root_folder, "src/functions/000_setup.R"))
 extract = readRDS(file.path(envrmt$model_training_data, "extract_merge.RDS"))
 
 
-for (i in c("main", "diverse", "Bu", "Fi", "Ei", "Dou", "Lä", "Ki", "Lbk", "Lbl")) {
+for (i in c("main")) {
   validation(extr = extract,
              model = i, 
              idCol = "FAT__ID", 
-             responseCol = "BAGRu") 
+             responseCol = "Gruppe") 
   
 } # end for loop
 

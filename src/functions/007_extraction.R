@@ -20,14 +20,12 @@ extraction <- function(rasterStack, pol, bufferSize = -20, idColName = "FAT__ID"
   result = lapply(seq(nrow(pol)), function(i){
     cur = pol[i,]
     ext <- terra::ext(cur)
-    ext2 <- raster::extent(cur)
+    
     
 
-    LIDARIndices <- rasterdb$raster(ext2)
-    LIDARIndices = raster::dropLayer(LIDARIndices, "band1") 
-    #all = terra::crop(rasterStack, ext)
-    chm = LIDARIndices$chm_height_max
-    chm = terra::extract(rast(chm), vect(cur), df = TRUE)
+    sen = terra::crop(rasterStack, ext)
+    chm = sen$chm_height_max
+    chm = terra::extract(chm, vect(cur), df = TRUE)
     
     # check if polygon only contains one row
     if(nrow(chm) < 6){
@@ -38,17 +36,12 @@ extraction <- function(rasterStack, pol, bufferSize = -20, idColName = "FAT__ID"
     
     # check if all chm values are FALSE
     if(all(is.na(chm$chm_height_max))){
-      print("Luxemburg")
-      return("Luxemburg")
+      print("NA")
+      return("NA")
     } else {
       
 
-      sen = terra::crop(rasterStack, ext)
-      LIDARIndices <- rast(LIDARIndices)
-      LIDARIndices <- terra::crop(LIDARIndices, ext)
-      all = rast(list(LIDARIndices, sen))
-
-      all = terra::crop(all, ext)
+      all = terra::crop(rasterStack, ext)
 
       df = terra::extract(all, vect(cur), df = TRUE)
       df = df %>% dplyr::mutate(cur %>% select((!!sym(idColName))))

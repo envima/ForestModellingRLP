@@ -45,7 +45,7 @@ validation = function(extr,
   # load model
   mod = readRDS(file.path(envrmt$models, paste0(model, "_ffs.RDS")))
   valid = stats::predict(object = mod, newdata = extr_sub)
-  aoa = CAST::aoa(newdata = extr_sub, model = mod)
+  
   
   
   val_df = data.frame(ID = pull(extr_sub, idCol),
@@ -60,8 +60,8 @@ validation = function(extr,
   
   
   # output
-  saveRDS(val_cm, paste0(file.path(envrmt$validation), m, "_confusionmatrix.RDS"))
-  yaml::write_yaml(yaml::as.yaml(meta), file = paste0(file.path(envrmt$validation), m, "_meta.yaml"))
+  saveRDS(val_cm, file.path(envrmt$confusionmatrix, paste0(model, "_confusionmatrix.RDS")))
+  yaml::write_yaml(yaml::as.yaml(meta), file = file.path(envrmt$confusionmatrix, paste0(model, "_meta.yaml")))
   
   
 } # end of function
