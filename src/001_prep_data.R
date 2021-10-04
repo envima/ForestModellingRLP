@@ -58,8 +58,10 @@ download_sentinel(startdate = "2019-02-22",
 
 for (i in c("summer", "winter")) {
   
+
  sentinel = merge_crop_raster(listOfFiles = list.files(envrmt[[i]], pattern = glob2rx("*.tif"), full.names = TRUE),
                               setNAValues = cbind(-Inf, 0.00001, NA))
+
   
   #sentinel = terra::project(sentinel, terra::rast(file.path(envrmt$hansen, "forestMask.tif")))
   sentinel = terra::mask(sentinel, terra::rast(file.path(envrmt$hansen, "forestMask.tif")))
