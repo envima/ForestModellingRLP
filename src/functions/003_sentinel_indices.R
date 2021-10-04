@@ -14,15 +14,15 @@
 sentinelIndices <- function(filePath,
                             outPath,
                             suffix = "_summer",
-                            redEdge1 = "B5",
-                            redEdge2 = "B6",
-                            redEdge3 = "B7",
-                            nir = "B8",
+                            redEdge1 = "B05",
+                            redEdge2 = "B06",
+                            redEdge3 = "B07",
+                            nir = "B08",
                             swir2 = "B11", 
                             swir3 = "B12",
-                            red = "B4",
-                            green = "B3", 
-                            blue = "B2") {
+                            red = "B04",
+                            green = "B03", 
+                            blue = "B02") {
   
   
   # load raster
