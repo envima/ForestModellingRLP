@@ -20,24 +20,35 @@ source(file.path(root_folder, "src/functions/000_setup.R"))
 #-------------------#
 
 # extraction set with relevant class information attatched
-extract = readRDS(file.path(envrmt$model_training_data, "extract_merge.RDS"))
+extr = readRDS(file.path(envrmt$model_training_data, "extract_merge.RDS"))
 
 
 
 for (i in c("main", "diverse")) {
-  validation(extr = extract,
-             model = i, 
-             idCol = "FAT__ID", 
-             responseCol = "Gruppe") 
   
+  validation_aoa(extr,
+                 model = i, 
+                 idCol = "FAT__ID", 
+                 responseCol = "BAGRu",
+                 FID = sf::read_sf(file.path(envrmt$FID, "Trainingsgebiete.gpkg"))
+  )
+   print(paste("Finished validation for model: ", i)) 
 } # end for loop
 
 
+
+# 1.1 - Validation for successional stages ####
+#---------------------------------------------#
+
+
 for (i in c("Bu", "Fi", "Ei", "Dou", "Lä", "Ki", "Lbk", "Lbl")) {
-  validation(extr = extract,
+  validation_aoa(extr = extr,
              model = paste0("quality_", i), 
              idCol = "FAT__ID", 
-             responseCol = "Quality") 
+             responseCol = "Quality",
+             FID = sf::read_sf(file.path(envrmt$FID, "Trainingsgebiete.gpkg"))
+             ) 
+  
   print(paste("Finished confusion matrix for model: ", i))
 } # end for loop
 
