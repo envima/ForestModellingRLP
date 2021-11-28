@@ -9,7 +9,7 @@
 
 # 0 - set up ####
 #---------------#
-
+.libPaths("C:/Users/bald/R_data/R-4.1.1/library/")
 library(envimaR)
 library(rprojroot)
 root_folder = find_rstudio_root_file()

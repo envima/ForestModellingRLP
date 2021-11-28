@@ -1,101 +1,111 @@
-#' @name XXX_download_sentinel_gee.R
-#' @docType function
-#' @description 
-#' @param startdate = "2019-06-21" 
-#' @param enddate = "2019-06-30"
-#' @param borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg")
-#' @param MaxCloud = 2
-#' @param outfilePath = file.Path(envrmt$summer)
-#' @return 
+
+myextent = sf::read_sf(file.path(envrmt$border, "Landesgrenze_RLP.shp"))
+myextent = sf::st_transform(myextent, "epsg:25832")
+myextent = sf::st_buffer(myextent, 200)
+
+# 1 # summer 20m ####
+#-------------------#
+
+# setup sentinel retrieval object
+out_paths_1 <- sen2r::sen2r(
+  gui = FALSE,
+  step_atmcorr = "l2a",
+  online = TRUE,
+  extent = myextent,
+  extent_name = "RLP_summer_20_part1",
+  timewindow = c(as.Date("2019-06-24"), as.Date("2019-06-24")),
+  list_prods = c("BOA"),
+  mask_type = "cloud_and_shadow",
+  max_mask = 10,
+  path_l2a = file.path(envrmt$summer, "safe/"), # folder to store downloaded SAFE
+  server = "scihub",
+  preprocess = TRUE,
+  sen2cor_use_dem = TRUE,
+  max_cloud_safe = 10,
+  overwrite = TRUE,
+  res_s2 = "20m",
+  proj = "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ",
+  s2tiles_selected = c("32UMV", "32UMA"),
+  path_out =  envrmt$summer # folder to store downloaded research arec cutoff
+)
 
 
-download_sentinel = function(startdate = "2019-06-29", 
-                             enddate = "2019-06-30", 
-                             borderFilePath = file.path(envrmt$border, "border_buffer_200m.gpkg"),
-                             MaxCloud = 5,
-                             outfilePath = file.path(envrmt$summer, "/")) {
-  
-  # Define an image Collection of sentinel-2 Images at Level 2-A
-  # More info at: https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR
-  img <- ee$ImageCollection("COPERNICUS/S2_SR") 
-  
-  # get crs of Image Collection
-  #img_crs = img$getInfo()$features[[1]]$bands[[1]]$crs 
-  
-  
-  # Define an area of interest.
-  region  = sf::read_sf(borderFilePath) %>%
-    sf::st_transform("EPSG:25832") %>%
-    rgee::sf_as_ee()
-  # transform to EarthEngine Object: Geometry
-  region = region$geometry()$bounds()
-  
-  # filter imagecollection by date and  cloud cover
-  
-  img = img$filter(ee$Filter$lte("CLOUDY_PIXEL_PERCENTAGE", MaxCloud))$
-    filterDate(startdate, enddate)$
-    filterBounds(region)$
-    map(function(x) x$reproject("EPSG:25832"))
-  # Number and dates of selected images
-  tiles = ee_get_date_ic(img)
-  print(tiles)
-  
-  # create an Image and get bandnames
-  selected_images = img$mosaic()
-  band_names = selected_images$bandNames()$getInfo()   
-  band_names = band_names[1:12]
-  #print(paste("Download the following band: ", band_names))
-  # select bands 
-  img = img$select(band_names)
-  
-  
-  #img2 = img$mosaic()$reproject("EPSG:25832")
-  
-  continue = readline("Do you want to download all the sentinel tiles listed above?[TRUE/FALSE]")  
-  
-  if (continue == TRUE) {
-   # img$getInfo()
-    
-    
-   img_02 = ee_imagecollection_to_local(
-     ic = img,
-    dsn = outfilePath,
-      region = region,
-      crs = 'EPSG:25832',
-      via = "drive",
-      container = "rgee_backup",
-      maxPixels = 1e+09,
-      lazy = FALSE,
-      public = FALSE,
-      add_metadata = TRUE,
-      timePrefix = TRUE,
-      quiet = FALSE,
-      scale = 20
-    )
-  } # end if 
-  if (continue == FALSE) {
-    #------------------------
-    continue = readline("Do you want to download one specific tile?[y/n]")  
-    if (continue == "y" | continue == "Y") {
-      nTile = readline("Which one?[number of tile in list above]")
-      
-      img2 = img$filterMetadata("DATATAKE_IDENTIFIER" , "equals", "20190224T103019_20190224T103021_T32UNV")
-      img2 =ee$Image(tiles$id[[as.integer(nTile)]])$reproject("EPSG:25832")$select(band_names)
-      
-      
-      task_img <- ee_image_to_drive(
-        image = img2,
-        folder = "rgee_backup",
-        scale = 20,
-        region = region,
-        maxPixels = 213152170
-      )
-      
-      task_img$start()
-      ee_monitoring(task_img)
-      # Move results from Drive to local
-      ee_drive_to_local(task = task_img, dsn = outfilePath)
-      
-    }
-  }
-}
+
+# setup sentinel retrieval object
+out_paths_1 <- sen2r::sen2r(
+  gui = FALSE,
+  step_atmcorr = "l2a",
+  online = TRUE,
+  extent = myextent,
+  extent_name = "RLP_summer_20_part2",
+  timewindow = c(as.Date("2019-06-27"), as.Date("2019-06-27")),
+  list_prods = c("BOA"),
+  mask_type = "cloud_and_shadow",
+  max_mask = 10,
+  path_l2a = file.path(envrmt$summer, "safe/"), # folder to store downloaded SAFE
+  server = "scihub",
+  preprocess = TRUE,
+  sen2cor_use_dem = TRUE,
+  max_cloud_safe = 10,
+  overwrite = TRUE,
+  res_s2 = "20m",
+  proj = "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ",
+  s2tiles_selected = c("31UGR","32ULA", "32ULB", "32ULV", "32UMB"),
+  path_out =  envrmt$summer # folder to store downloaded research arec cutoff
+)
+
+
+
+# 2 - winter 10 m ####
+#--------------------#
+
+out_paths_1 <- sen2r::sen2r(
+  gui = FALSE,
+  step_atmcorr = "l2a",
+  online = TRUE,
+  extent = myextent,
+  extent_name = "RLP_winter_20_part1",
+  timewindow = c(as.Date("2019-02-27"), as.Date("2019-02-27")),
+  list_prods = c("BOA"),
+  mask_type = "cloud_and_shadow",
+  max_mask = 10,
+  path_l2a = file.path(envrmt$winter, "safe/"), # folder to store downloaded SAFE
+  server = "scihub",
+  preprocess = TRUE,
+  sen2cor_use_dem = TRUE,
+  max_cloud_safe = 10,
+  overwrite = TRUE,
+  res_s2 = "20m",
+  proj = "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ",
+  s2tiles_selected = c("31UGR", "32ULA", "32ULB", "32ULV", "32UMB"),
+  path_out =  envrmt$winter # folder to store downloaded research arec cutoff
+)
+
+
+
+# setup sentinel retrieval object
+out_paths_1 <- sen2r::sen2r(
+  gui = FALSE,
+  step_atmcorr = "l2a",
+  online = TRUE,
+  extent = myextent,
+  extent_name = "RLP_winter_20_part1",
+  timewindow = c(as.Date("2019-02-24"), as.Date("2019-02-24")),
+  list_prods = c("BOA"),
+  mask_type = "cloud_and_shadow",
+  max_mask = 10,
+  path_l2a = file.path(envrmt$summer, "safe/"), # folder to store downloaded SAFE
+  server = "scihub",
+  preprocess = TRUE,
+  sen2cor_use_dem = TRUE,
+  max_cloud_safe = 10,
+  overwrite = TRUE,
+  res_s2 = "20m",
+  proj = "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ",
+  s2tiles_selected = c("32UMA", "32UMV"),
+  path_out =  envrmt$summer # folder to store downloaded research arec cutoff
+)
+
+
+
+
