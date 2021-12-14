@@ -64,8 +64,9 @@
 		 // Add WSM with tree species
        
 		 var wmsLayer = L.tileLayer.wms('https://vhrz1078.hrz.uni-marburg.de:8201/public/4YDVVUECZPWZ/static', {layers: ['color'],
-                format: 'image/png',
-				uppercase: true
+                		format: 'image/png',
+				uppercase: true,
+				attribution: '&copy; GeoBasis-DE/LVermGeoRP 2018 | &copy; Hansen/UMD/Google/USGS/NASA'
 				});
          // Adding layer to the map
          map.addLayer(wmsLayer);
