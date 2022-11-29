@@ -62,14 +62,37 @@
 		
 		 // Add WSM with tree species
        
-		 var wmsLayer = L.tileLayer.wms('https://vhrz1078.hrz.uni-marburg.de:8201/public/4YDVVUECZPWZ/static', {layers: ['color'],
+		 var wmsLayer = L.tileLayer.wms('https://vhrz1078.hrz.uni-marburg.de:8201/public/T16ZQV33BSJJ/treeSpecies', {layers: ['color'],
                 		format: 'image/png',
 				uppercase: true,
 				attribution: '| &copy; GeoBasis-DE/LVermGeoRP 2018 | &copy; Hansen/UMD/Google/USGS/NASA | &copy; European Space Agency – ESA produced from ESA remote sensing data | Landesforsten Rheinland-Pfalz 2014'
 				});
          // Adding layer to the map
          map.addLayer(wmsLayer);
-		 
+		
+		 // Add WSM with tree species
+       
+		 var mops = L.tileLayer.wms('https://vhrz1078.hrz.uni-marburg.de:8201/public/OJ3RD7M5C4B9/mops', {layers: ['color'],
+                		format: 'image/png',
+				uppercase: true,
+				attribution: '| &copy; GeoBasis-DE/LVermGeoRP 2018 | &copy; Hansen/UMD/Google/USGS/NASA | &copy; European Space Agency – ESA produced from ESA remote sensing data | Landesforsten Rheinland-Pfalz 2014'
+				});
+         // Adding layer to the map
+        // map.addLayer(mops);
+		 var blo = L.tileLayer.wms('https://vhrz1078.hrz.uni-marburg.de:8201/public/007WEKQPXA1M/BLO', {layers: ['color'],
+                		format: 'image/png',
+				uppercase: true,
+				attribution: '| &copy; GeoBasis-DE/LVermGeoRP 2018 | &copy; Hansen/UMD/Google/USGS/NASA | &copy; European Space Agency – ESA produced from ESA remote sensing data | Landesforsten Rheinland-Pfalz 2014'
+				});
+		
+		
+		 var bech = L.tileLayer.wms('https://vhrz1078.hrz.uni-marburg.de:8201/public/763Q787NOHP6/bechstein', {layers: ['color'],
+                		format: 'image/png',
+				uppercase: true,
+				attribution: '| &copy; GeoBasis-DE/LVermGeoRP 2018 | &copy; Hansen/UMD/Google/USGS/NASA | &copy; European Space Agency – ESA produced from ESA remote sensing data | Landesforsten Rheinland-Pfalz 2014'
+				});
+		
+/*		
 		// Add WSM with AOA
        
 		 var wmsAOA = L.tileLayer.wms('https://vhrz1078.hrz.uni-marburg.de:8201/public/UV77LPZ032DY', {layers: ['band1'],
@@ -79,7 +102,7 @@
          // Adding layer to the map
          //map.addLayer(wmsAOA);
 	
-		
+		*/
 		
 		
 		////////////////////////////////////////////////////////////////
@@ -92,9 +115,13 @@
 		"Open Topo Map": OpenTopoMap
 		};
 	
+	
 		var overlayMaps = {
 		"Tree Species": wmsLayer,
-		"Area of Applicability": wmsAOA
+		"Mopsfledermaus": mops,
+		"Braunes Langohr": blo,
+		"Bechsteinfledermaus": bech
+		//"Area of Applicability": wmsAOA
 		};
 	
 	
@@ -111,18 +138,24 @@
 
 	legend.onAdd = function(map) {
 		var div = L.DomUtil.create("div", "legend");
-		div.innerHTML += "<h4>Tree Species</h4>";
-		div.innerHTML += '<i style="background: #74d70b"></i><span>Beech</span><br>';
-		div.innerHTML += '<i style="background: #ed6ccd"></i><span>Douglas fir</span><br>';
-		div.innerHTML += '<i style="background: #deea13"></i><span>Oak</span><br>';
-		div.innerHTML += '<i style="background: #173fc5"></i><span>Spruce</span><br>';
-		div.innerHTML += '<i style="background: #dc0f0f"></i><span>Pine</span><br>';
-		/*div.innerHTML += '<i style="background: #f18304"></i><span>Larch</span><br>';
-		div.innerHTML += '<i style="background: #560e2d"></i><span>Long-lived trees</span><br>';
-		div.innerHTML += '<i style="background: #51c8f7"></i><span>Short-lived trees</span><br>'; */
-		div.innerHTML += "<h4>Area of Applicability</h4>";
+		div.innerHTML += "<h4>Baumartengruppen</h4>";
+		div.innerHTML += '<i style="background: #74d70b"></i><span>Buche</span><br>';
+		div.innerHTML += '<i style="background: #ed6ccd"></i><span>Douglasie</span><br>';
+		div.innerHTML += '<i style="background: #deea13"></i><span>Eiche</span><br>';
+		div.innerHTML += '<i style="background: #173fc5"></i><span>Fichte</span><br>';
+		div.innerHTML += '<i style="background: #dc0f0f"></i><span>Kiefer</span><br>';
+		div.innerHTML += '<i style="background: #f18304"></i><span>Lärche</span><br>';
+		div.innerHTML += '<i style="background: #560e2d"></i><span>Kurzlebige Laubbäume</span><br>';
+		div.innerHTML += '<i style="background: #51c8f7"></i><span>Langlebige Laubbäume</span><br>'; 
+		/*div.innerHTML += "<h4>Area of Applicability</h4>";
 		div.innerHTML += '<i style="background: #000000"></i><span>Not Applicable</span><br>';
-		
+		*/
+		div.innerHTML += "<h4>Habitatmodellierungen</h4>";
+		div.innerHTML += '<i style="background: #2b83ba"></i><span>0.00</span><br>';
+		div.innerHTML += '<i style="background: #abdda4"></i><span>0.25</span><br>';
+		div.innerHTML += '<i style="background: #ffffbf"></i><span>0.50</span><br>';
+		div.innerHTML += '<i style="background: #fdae61"></i><span>0.75</span><br>';
+		div.innerHTML += '<i style="background: #d7191c"></i><span>1.00</span><br>';
 	return div;
 	};
 
@@ -179,3 +212,4 @@
    
    
 </html>
+Footer
